@@ -36,7 +36,7 @@ export const signUp = async (req, res) => {
         if (!error.isEmpty()) {
             return res.json(error);
         }
-        const profileUrlImage = profileImage ? 'http://localhost:5000/' + profileImage.path.replace(/\\/g, '/') : null;
+        const profileUrlImage = profileImage ? 'https://www.siiappback.siidevelopment.com/' + profileImage.path.replace(/\\/g, '/') : null;
         const existingUser = await userModel.findOne({ email });
         if (existingUser) {
             return res.status(422).json({ message: "User already exists, please login!" });

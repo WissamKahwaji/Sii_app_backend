@@ -50,7 +50,7 @@ export const createCourse = async (req, res) => {
         } = req.body;
 
         const imgPath = req.files['img'][0].path;
-        const urlImg = 'http://localhost:5000/' + imgPath.replace(/\\/g, '/');
+        const urlImg = 'https://www.siiappback.siidevelopment.com/' + imgPath.replace(/\\/g, '/');
 
 
         const newCourse = new courseModel({
@@ -118,7 +118,7 @@ export const createLesson = async (req, res) => {
         if (!image) {
             return res.status(404).json({ message: 'Attached file is not an image.' });
         }
-        const urlImage = 'http://localhost:5000/' + image.path.replace(/\\/g, '/');
+        const urlImage = 'https://www.siiappback.siidevelopment.com/' + image.path.replace(/\\/g, '/');
 
         const newLesson = new lessonModel({
             name,
@@ -129,7 +129,7 @@ export const createLesson = async (req, res) => {
 
         if (req.files['video']) {
             const video = req.files['video'][0];
-            const urlVideo = 'http://localhost:5000/' + video.path.replace(/\\/g, '/');
+            const urlVideo = 'https://www.siiappback.siidevelopment.com/' + video.path.replace(/\\/g, '/');
             newLesson.videoUrl = urlVideo;
         }
 
@@ -179,13 +179,13 @@ export const editLesson = async (req, res) => {
             if (!image) {
                 return res.status(404).json({ message: 'Attached file is not an image.' });
             }
-            const urlImage = 'http://localhost:5000/' + image.path.replace(/\\/g, '/');
+            const urlImage = 'https://www.siiappback.siidevelopment.com/' + image.path.replace(/\\/g, '/');
             updatedLessonData.img = urlImage;
         }
 
         if (req.files['video']) {
             const video = req.files['video'][0];
-            const urlVideo = 'http://localhost:5000/' + video.path.replace(/\\/g, '/');
+            const urlVideo = 'https://www.siiappback.siidevelopment.com/' + video.path.replace(/\\/g, '/');
             updatedLessonData.videoUrl = urlVideo;
         }
 
