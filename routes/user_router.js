@@ -1,7 +1,13 @@
 import express from "express";
 import { check } from "express-validator";
 import {
+  editUserProfile,
   getUserById,
+  getUserByUserName,
+  getUserFollowers,
+  getUserFollowings,
+  getUserLikedPosts,
+  getUserSavedPosts,
   signUp,
   signin,
 } from "../controllers/user_ctrl/user_ctrl.js";
@@ -39,4 +45,10 @@ router.post(
 
 router.get("/ById", auth, getUserById);
 
+router.put("/edit-profile", auth, editUserProfile);
+router.get("/user-followings", auth, getUserFollowings);
+router.get("/user-followers", auth, getUserFollowers);
+router.get("/user-liked-posts", auth, getUserLikedPosts);
+router.get("/user-saved-posts", auth, getUserSavedPosts);
+router.get("/by-userName/:userName", getUserByUserName);
 export default router;
