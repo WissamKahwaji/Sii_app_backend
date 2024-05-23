@@ -3,6 +3,9 @@
 import { Comment } from "../../models/posts/comment_model.js";
 import { PostModel } from "../../models/posts/post_model.js";
 import { userModel } from "../../models/user/user_model.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -160,7 +163,7 @@ export const createPost = async (req, res) => {
         }
 
         const imageUrl =
-          "http://localhost:5001/" + image.path.replace(/\\/g, "/");
+          `${process.env.BASE_URL}` + image.path.replace(/\\/g, "/");
         imageUrls.push(imageUrl);
         post.images = imageUrls;
       }
@@ -168,12 +171,12 @@ export const createPost = async (req, res) => {
     if (req.files["video"]) {
       const video = req.files["video"][0];
       const urlVideo =
-        "http://localhost:5001/" + video.path.replace(/\\/g, "/");
+        `${process.env.BASE_URL}` + video.path.replace(/\\/g, "/");
       post.postVideo = urlVideo;
     }
     if (req.files["doc"]) {
       const doc = req.files["doc"][0];
-      const urlDoc = "http://localhost:5001/" + doc.path.replace(/\\/g, "/");
+      const urlDoc = `${process.env.BASE_URL}` + doc.path.replace(/\\/g, "/");
       post.postDocs = urlDoc;
     }
 
