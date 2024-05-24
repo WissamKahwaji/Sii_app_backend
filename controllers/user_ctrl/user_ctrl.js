@@ -222,3 +222,49 @@ export const editUserProfile = async (req, res) => {
     return res.status(500).json({ message: `Error : ${error}` });
   }
 };
+
+export const toggleFollowUser = async (req, res) => {
+  const { id: targetUserId } = req.params;
+  const userId = req.userId;
+
+  if (targetUserId === userId) {
+    return res
+      .status(400)
+      .json({ error: "You cannot follow/unfollow yourself." });
+  }
+
+  try {
+    // Find the authenticated user and the target user
+    const user = await userModel.findById(userId);
+    const targetUser = await userModel.findById(targetUserId);
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Check if the user is already following the target user
+    const isFollowing = user.followings.includes(targetUserId);
+
+    if (isFollowing) {
+      // Unfollow logic
+      user.followings = user.followings.filter(
+        id => id.toString() !== targetUserId
+      );
+      targetUser.followers = targetUser.followers.filter(
+        id => id.toString() !== userId
+      );
+      await user.save();
+      await targetUser.save();
+      res.status(200).json({ message: "Unfollowed successfully." });
+    } else {
+      // Follow logic
+      user.followings.push(targetUserId);
+      targetUser.followers.push(userId);
+      await user.save();
+      await targetUser.save();
+      res.status(200).json({ message: "Followed successfully." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

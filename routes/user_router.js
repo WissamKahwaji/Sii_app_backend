@@ -10,6 +10,7 @@ import {
   getUserSavedPosts,
   signUp,
   signin,
+  toggleFollowUser,
 } from "../controllers/user_ctrl/user_ctrl.js";
 import auth from "../middlewares/auth.js";
 
@@ -51,4 +52,5 @@ router.get("/user-followers", auth, getUserFollowers);
 router.get("/user-liked-posts", auth, getUserLikedPosts);
 router.get("/user-saved-posts", auth, getUserSavedPosts);
 router.get("/by-userName/:userName", getUserByUserName);
+router.post("/toggle-follow/:id", auth, toggleFollowUser);
 export default router;
