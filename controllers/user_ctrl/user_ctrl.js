@@ -113,6 +113,17 @@ export const getUserByUserName = async (req, res) => {
   }
 };
 
+export const getUserByUserCategory = async (req, res) => {
+  try {
+    const { userCategory } = req.params;
+    const users = await userModel.find({ userCategory: userCategory });
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export const getUserFollowings = async (req, res) => {
   try {
     const id = req.userId;
@@ -200,7 +211,14 @@ export const editUserProfile = async (req, res) => {
       return res.status(404).json({ message: "User Not found" });
     }
 
-    const { fullName, bio, mobileNumber, socialMedia } = req.body;
+    const {
+      fullName,
+      bio,
+      mobileNumber,
+      socialMedia,
+      userCategory,
+      userAbout,
+    } = req.body;
 
     const imgPath =
       req.files && req.files["profileImage"]
@@ -214,6 +232,8 @@ export const editUserProfile = async (req, res) => {
     if (imgUrl) user.profileImage = imgUrl;
     if (mobileNumber) user.mobileNumber = mobileNumber;
     if (socialMedia) user.socialMedia = socialMedia;
+    if (userCategory) user.userCategory = userCategory;
+    if (userAbout) user.userAbout = userAbout;
 
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser);

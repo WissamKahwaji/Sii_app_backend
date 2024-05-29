@@ -44,3 +44,38 @@ export const getUserCard = async (req, res) => {
       .json({ message: "Something went wrong", error: error });
   }
 };
+
+export const editUserCard = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { email, mobileNumber } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User Not found" });
+    }
+
+    const editedCardParams = {};
+    if (email) editedCardParams.email = email;
+    if (mobileNumber) editedCardParams.mobileNumber = mobileNumber;
+
+    const editedCard = await siiCardModel.findByIdAndUpdate(
+      user.siiCard,
+      editedCardParams,
+      {
+        new: true,
+      }
+    );
+
+    if (!editedCard) {
+      return res.status(404).json({ message: "Error when updating your card" });
+    }
+
+    return res.status(201).json(editedCard);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};

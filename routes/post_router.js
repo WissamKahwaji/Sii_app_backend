@@ -17,9 +17,9 @@ import auth from "../middlewares/auth.js";
 const router = express.Router();
 
 router.get("/", getAllPosts);
-router.get("/user-posts/:userId", auth, getUserPosts);
-router.get("/user-videos-posts/:userId", auth, getUserVideosPosts);
-router.get("/user-docs-posts/:userId", auth, getUserDocsPosts);
+router.get("/user-posts/:userId", getUserPosts);
+router.get("/user-videos-posts/:userId", getUserVideosPosts);
+router.get("/user-docs-posts/:userId", getUserDocsPosts);
 
 router.post("/create", auth, createPost);
 router.put("/edit/:id", auth, editPost);

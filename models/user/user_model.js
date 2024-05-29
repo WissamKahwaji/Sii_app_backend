@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema(
       },
     ],
     userCategory: String,
+    userAbout: {
+      aboutUs: String,
+      ourMission: String,
+      ourVision: String,
+    },
     socialMedia: {
       webSite: String,
       whatsApp: String,

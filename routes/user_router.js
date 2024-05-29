@@ -3,6 +3,7 @@ import { check } from "express-validator";
 import {
   editUserProfile,
   getUserById,
+  getUserByUserCategory,
   getUserByUserName,
   getUserFollowers,
   getUserFollowings,
@@ -53,4 +54,5 @@ router.get("/user-liked-posts", auth, getUserLikedPosts);
 router.get("/user-saved-posts", auth, getUserSavedPosts);
 router.get("/by-userName/:userName", getUserByUserName);
 router.post("/toggle-follow/:id", auth, toggleFollowUser);
+router.get("/userCategory/:userCategory", getUserByUserCategory);
 export default router;

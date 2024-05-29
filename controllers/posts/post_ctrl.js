@@ -3,6 +3,9 @@
 import { Comment } from "../../models/posts/comment_model.js";
 import { PostModel } from "../../models/posts/post_model.js";
 import { userModel } from "../../models/user/user_model.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -160,8 +163,7 @@ export const createPost = async (req, res) => {
         }
 
         const imageUrl =
-          "https://siiappback.siidevelopment.com/" +
-          image.path.replace(/\\/g, "/");
+          `${process.env.BASE_URL}` + image.path.replace(/\\/g, "/");
         imageUrls.push(imageUrl);
         post.images = imageUrls;
       }
@@ -169,14 +171,18 @@ export const createPost = async (req, res) => {
     if (req.files["video"]) {
       const video = req.files["video"][0];
       const urlVideo =
-        "https://siiappback.siidevelopment.com/" +
-        video.path.replace(/\\/g, "/");
+        `${process.env.BASE_URL}` + video.path.replace(/\\/g, "/");
       post.postVideo = urlVideo;
+    }
+    if (req.files["coverVideoImage"]) {
+      const coverVideoImage = req.files["coverVideoImage"][0];
+      const urlcoverVideoImage =
+        `${process.env.BASE_URL}` + coverVideoImage.path.replace(/\\/g, "/");
+      post.coverVideoImage = urlcoverVideoImage;
     }
     if (req.files["doc"]) {
       const doc = req.files["doc"][0];
-      const urlDoc =
-        "https://siiappback.siidevelopment.com/" + doc.path.replace(/\\/g, "/");
+      const urlDoc = `${process.env.BASE_URL}` + doc.path.replace(/\\/g, "/");
       post.postDocs = urlDoc;
     }
 
