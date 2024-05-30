@@ -87,6 +87,8 @@ const userSchema = new mongoose.Schema(
       threads: String,
       snapChat: String,
       youtube: String,
+      xPlatform: String,
+      painterest: String,
     },
   },
   { timestamps: true },
