@@ -317,7 +317,13 @@ export const search = async (req, res) => {
         { caption: new RegExp(query, "i") },
         { tags: new RegExp(query, "i") },
       ],
-    }).exec();
+      postType: "image",
+    })
+      .populate({
+        path: "owner",
+        select: ["_id", "userName", "fullName"],
+      })
+      .exec();
 
     return res.json({ users, posts, query });
   } catch (error) {
