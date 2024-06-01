@@ -89,6 +89,7 @@ const userSchema = new mongoose.Schema(
       youtube: String,
       xPlatform: String,
       painterest: String,
+      otherLink: String,
     },
   },
   { timestamps: true },

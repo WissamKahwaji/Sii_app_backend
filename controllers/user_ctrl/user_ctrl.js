@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import dotenv from "dotenv";
+import { PostModel } from "../../models/posts/post_model.js";
 
 dotenv.config();
 
@@ -131,7 +132,8 @@ export const getUserFollowings = async (req, res) => {
       .findById(id)
       .select(["userName", "fullName", "followings"])
       .populate("followings");
-    return res.status(200).json(userFollowings);
+    const followings = userFollowings.followings;
+    return res.status(200).json(followings);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: `Error : ${error}` });
@@ -145,7 +147,8 @@ export const getUserFollowers = async (req, res) => {
       .findById(id)
       .select(["userName", "fullName", "followers"])
       .populate("followers");
-    return res.status(200).json(userFollowers);
+    const followers = userFollowers.followers;
+    return res.status(200).json(followers);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: `Error : ${error}` });
@@ -286,5 +289,38 @@ export const toggleFollowUser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const search = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Query parameter is required" });
+  }
+
+  try {
+    // Search for users
+    const users = await userModel
+      .find({
+        $or: [
+          { userName: new RegExp(query, "i") },
+          { fullName: new RegExp(query, "i") },
+          { email: new RegExp(query, "i") },
+        ],
+      })
+      .exec();
+
+    // Search for posts
+    const posts = await PostModel.find({
+      $or: [
+        { caption: new RegExp(query, "i") },
+        { tags: new RegExp(query, "i") },
+      ],
+    }).exec();
+
+    return res.json({ users, posts, query });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

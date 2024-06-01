@@ -162,27 +162,39 @@ export const createPost = async (req, res) => {
             .json({ message: "Attached file is not an image." });
         }
 
-        const imageUrl =
-          `${process.env.BASE_URL}` + image.path.replace(/\\/g, "/");
+        const imageUrl = `${process.env.BASE_URL}/${image.path.replace(
+          /\\/g,
+          "/"
+        )}`;
         imageUrls.push(imageUrl);
         post.images = imageUrls;
       }
     }
     if (req.files["video"]) {
       const video = req.files["video"][0];
-      const urlVideo =
-        `${process.env.BASE_URL}` + video.path.replace(/\\/g, "/");
+      const urlVideo = `${process.env.BASE_URL}/${video.path.replace(
+        /\\/g,
+        "/"
+      )}`;
       post.postVideo = urlVideo;
     }
     if (req.files["coverVideoImage"]) {
       const coverVideoImage = req.files["coverVideoImage"][0];
-      const urlcoverVideoImage =
-        `${process.env.BASE_URL}` + coverVideoImage.path.replace(/\\/g, "/");
+      const urlcoverVideoImage = `${
+        process.env.BASE_URL
+      }/${coverVideoImage.path.replace(/\\/g, "/")}`;
       post.coverVideoImage = urlcoverVideoImage;
+    }
+    if (req.files["coverPdfImage"]) {
+      const coverPdfImage = req.files["coverPdfImage"][0];
+      const urlcoverPdfImage = `${
+        process.env.BASE_URL
+      }/${coverPdfImage.path.replace(/\\/g, "/")}`;
+      post.coverPdfImage = urlcoverPdfImage;
     }
     if (req.files["doc"]) {
       const doc = req.files["doc"][0];
-      const urlDoc = `${process.env.BASE_URL}` + doc.path.replace(/\\/g, "/");
+      const urlDoc = `${process.env.BASE_URL}/${doc.path.replace(/\\/g, "/")}`;
       post.postDocs = urlDoc;
     }
 

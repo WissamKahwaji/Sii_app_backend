@@ -9,6 +9,7 @@ import {
   getUserFollowings,
   getUserLikedPosts,
   getUserSavedPosts,
+  search,
   signUp,
   signin,
   toggleFollowUser,
@@ -55,4 +56,5 @@ router.get("/user-saved-posts", auth, getUserSavedPosts);
 router.get("/by-userName/:userName", getUserByUserName);
 router.post("/toggle-follow/:id", auth, toggleFollowUser);
 router.get("/userCategory/:userCategory", getUserByUserCategory);
+router.get("/search", search);
 export default router;

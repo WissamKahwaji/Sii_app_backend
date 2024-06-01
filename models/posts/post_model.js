@@ -15,6 +15,7 @@ const postSchema = new mongoose.Schema(
     images: [String],
     postVideo: String,
     coverVideoImage: String,
+    coverPdfImage: String,
     postDocs: String,
     caption: String,
     link: String,
