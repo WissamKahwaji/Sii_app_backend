@@ -72,7 +72,18 @@ const userSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    isBusiness: {
+      type: Boolean,
+      default: false,
+    },
     userCategory: String,
+    userAccounts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+        default: [],
+      },
+    ],
     userAbout: {
       aboutUs: String,
       ourMission: String,
@@ -87,6 +98,7 @@ const userSchema = new mongoose.Schema(
       threads: String,
       snapChat: String,
       youtube: String,
+      tiktok: String,
       xPlatform: String,
       painterest: String,
       otherLink: String,

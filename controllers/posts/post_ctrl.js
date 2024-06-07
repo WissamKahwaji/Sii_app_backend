@@ -113,7 +113,7 @@ export const getPostById = async (req, res) => {
     const post = await PostModel.findById(id)
       .populate({
         path: "owner",
-        select: "fullName profileImage userName",
+        select: "fullName profileImage userName isBusiness",
       })
       .populate({
         path: "comments",
@@ -130,8 +130,15 @@ export const getPostById = async (req, res) => {
 
 export const createPost = async (req, res) => {
   try {
-    const { caption, link, whatsAppNumber, mobileNumber, tags, postType } =
-      req.body;
+    const {
+      caption,
+      link,
+      whatsAppNumber,
+      mobileNumber,
+      tags,
+      postType,
+      discountPercentage,
+    } = req.body;
     const userId = req.userId;
     const user = await userModel.findById(userId);
     if (!user) {
@@ -145,6 +152,7 @@ export const createPost = async (req, res) => {
       mobileNumber: mobileNumber,
       tags: tags,
       postType,
+      discountPercentage,
     });
     if (req.files["postImages"]) {
       const postImages = req.files["postImages"];
@@ -215,7 +223,14 @@ export const editPost = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
-    const { caption, link, whatsAppNumber, mobileNumber, tags } = req.body;
+    const {
+      caption,
+      link,
+      whatsAppNumber,
+      mobileNumber,
+      tags,
+      discountPercentage,
+    } = req.body;
     const post = await PostModel.findById(id);
 
     if (!post) {
@@ -233,6 +248,7 @@ export const editPost = async (req, res) => {
     if (whatsAppNumber) post.whatsAppNumber = whatsAppNumber;
     if (mobileNumber) post.mobileNumber = mobileNumber;
     if (tags) post.tags = tags;
+    if (discountPercentage) post.discountPercentage = discountPercentage;
 
     const updatedPost = await post.save();
 

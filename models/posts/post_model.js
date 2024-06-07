@@ -21,6 +21,7 @@ const postSchema = new mongoose.Schema(
     link: String,
     whatsAppNumber: String,
     mobileNumber: String,
+    discountPercentage: Number,
     tags: [String],
     //likes
     likes: [

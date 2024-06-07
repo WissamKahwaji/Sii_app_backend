@@ -41,6 +41,52 @@ export const signin = async (req, res) => {
   }
 };
 
+export const switchAccount = async (req, res) => {
+  const id = req.userId;
+  const { email } = req.body;
+  if (!email) {
+    return res.status(404).json({
+      success: false,
+      message: "Invalid email",
+    });
+  }
+  try {
+    const mainUser = await userModel.findById(id);
+    if (!mainUser)
+      return res.status(401).json({ message: "User doesn't exist." });
+    const existingUser = await userModel.findOne({ email });
+    if (!existingUser)
+      return res.status(401).json({ message: "User doesn't exist." });
+    if (mainUser.userName === existingUser.userName) {
+      return res.status(401).json({ message: "You can't add same account" });
+    }
+    if (
+      !mainUser.userAccounts.includes(existingUser._id) &&
+      !existingUser.userAccounts.includes(mainUser._id)
+    ) {
+      existingUser.userAccounts.push(mainUser._id);
+
+      mainUser.userAccounts.push(existingUser._id);
+    }
+
+    const token = jwt.sign(
+      { email: existingUser.email, id: existingUser._id },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+    await existingUser.save();
+    await mainUser.save();
+    res.status(200).json({
+      result: existingUser,
+      message: "LogIn Successfuled",
+      token: token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 export const signUp = async (req, res) => {
   try {
     const { userName, fullName, email, password } = req.body;
@@ -85,7 +131,7 @@ export const signUp = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Error in registration" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -149,6 +195,89 @@ export const getUserFollowers = async (req, res) => {
       .populate("followers");
     const followers = userFollowers.followers;
     return res.status(200).json(followers);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: `Error : ${error}` });
+  }
+};
+
+export const getUserAccounts = async (req, res) => {
+  try {
+    const id = req.userId;
+    const userAccounts = await userModel
+      .findById(id)
+      .select(["userName", "fullName", "userAccounts"])
+      .populate("userAccounts");
+    const accounts = userAccounts.userAccounts;
+    return res.status(200).json(accounts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: `Error : ${error}` });
+  }
+};
+
+export const signupWithAddAccount = async (req, res) => {
+  try {
+    const { userName, fullName, email, password } = req.body;
+    const id = req.userId;
+
+    const existingUser = await userModel.findById(id);
+    if (!existingUser)
+      return res.status(401).json({ message: "User doesn't exist." });
+
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.json(error);
+    }
+
+    const existingNewUser = await userModel.findOne({ email });
+    if (existingNewUser) {
+      return res
+        .status(422)
+        .json({ message: "User already exists, please login!" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    console.log(req.body);
+
+    const newUser = await userModel.create({
+      userName: userName,
+      fullName: fullName,
+      email: email,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign(
+      { email: newUser.email, id: newUser._id },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    existingUser.userAccounts.push(newUser._id);
+    console.log(existingUser.userAccounts);
+    newUser.userAccounts.push(existingUser._id);
+    await existingUser.save();
+    await newUser.save();
+    console.log("success");
+    return res.status(201).json({
+      result: newUser,
+      message: "User created",
+      token: token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: `Error : ${error}` });
+  }
+};
+
+export const addUserAccount = async (req, res) => {
+  try {
+    const id = req.userId;
+    const { email, userName, password } = req.body;
+    const existingUser = await userModel.findById(id);
+    if (!existingUser)
+      return res.status(401).json({ message: "User doesn't exist." });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: `Error : ${error}` });
@@ -221,8 +350,9 @@ export const editUserProfile = async (req, res) => {
       socialMedia,
       userCategory,
       userAbout,
+      isBusiness,
     } = req.body;
-
+    console.log(isBusiness);
     const imgPath =
       req.files && req.files["profileImage"]
         ? req.files["profileImage"][0].path
@@ -237,6 +367,7 @@ export const editUserProfile = async (req, res) => {
     if (socialMedia) user.socialMedia = socialMedia;
     if (userCategory) user.userCategory = userCategory;
     if (userAbout) user.userAbout = userAbout;
+    if (isBusiness) user.isBusiness = isBusiness;
 
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser);
