@@ -2,6 +2,8 @@ import express from "express";
 import { check } from "express-validator";
 import {
   editUserProfile,
+  forgetPassword,
+  generateUserQrCode,
   getUserAccounts,
   getUserById,
   getUserByUserCategory,
@@ -10,6 +12,7 @@ import {
   getUserFollowings,
   getUserLikedPosts,
   getUserSavedPosts,
+  resetPassword,
   search,
   signUp,
   signin,
@@ -78,4 +81,7 @@ router.get("/by-userName/:userName", getUserByUserName);
 router.post("/toggle-follow/:id", auth, toggleFollowUser);
 router.get("/userCategory/:userCategory", getUserByUserCategory);
 router.get("/search", search);
+router.post("/forget-password", forgetPassword);
+router.put("/reset-password/:token", resetPassword);
+router.post("/generate-qrcode", auth, generateUserQrCode);
 export default router;

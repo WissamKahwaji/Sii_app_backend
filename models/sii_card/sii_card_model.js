@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const siiCardSchema = new mongoose.Schema({
+  cardNumber: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   fullName: {
     type: String,
     required: true,

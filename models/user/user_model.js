@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "SiiCard",
     },
+    qrCodeUrl: { type: String },
     //posts
     posts: [
       {
@@ -89,6 +90,7 @@ const userSchema = new mongoose.Schema(
       ourMission: String,
       ourVision: String,
     },
+    location: String,
     socialMedia: {
       webSite: String,
       whatsApp: String,
@@ -102,7 +104,10 @@ const userSchema = new mongoose.Schema(
       xPlatform: String,
       painterest: String,
       otherLink: String,
+      companyProfile: String,
     },
+    resetToken: String,
+    resetTokenExpiration: Date,
   },
   { timestamps: true },
   {
