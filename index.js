@@ -11,6 +11,7 @@ import usrsRoutes from "./routes/user_router.js";
 import courseRoutes from "./routes/course_router.js";
 import postRoutes from "./routes/post_router.js";
 import siiCardRoutes from "./routes/sii_card_router.js";
+import foldersRoutes from "./routes/folder_router.js";
 
 const app = express();
 dotenv.config();
@@ -62,6 +63,8 @@ app.use(
     { name: "video", maxCount: 1 },
     { name: "doc", maxCount: 1 },
     { name: "postImages", maxCount: 10 },
+    { name: "folderImages", maxCount: 15 },
+    { name: "folderCoverImg", maxCount: 1 },
   ])
 );
 
@@ -69,6 +72,7 @@ app.use("/users", usrsRoutes);
 app.use("/course", courseRoutes);
 app.use("/post", postRoutes);
 app.use("/sii-card", siiCardRoutes);
+app.use("/folders", foldersRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 
