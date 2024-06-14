@@ -18,7 +18,21 @@ export const signin = async (req, res) => {
     });
   }
   try {
-    const existingUser = await userModel.findOne({ email });
+    let existingUser;
+    if (/\S+@\S+\.\S+/.test(email)) {
+      // If identifier is an email
+      existingUser = await userModel.findOne({ email: email });
+    } else if (/^\+?\d+$/.test(email)) {
+      console.log("mobile");
+      // If identifier is a mobile number, remove any non-digit characters
+
+      existingUser = await userModel.findOne({
+        mobileNumber: email.toString(),
+      });
+    } else {
+      // If identifier is a username
+      existingUser = await userModel.findOne({ userName: email });
+    }
     if (!existingUser)
       return res.status(401).json({ message: "User doesn't exist." });
     const isPasswordCorrect = await bcrypt.compare(

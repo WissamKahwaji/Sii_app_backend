@@ -12,6 +12,8 @@ import courseRoutes from "./routes/course_router.js";
 import postRoutes from "./routes/post_router.js";
 import siiCardRoutes from "./routes/sii_card_router.js";
 import foldersRoutes from "./routes/folder_router.js";
+import passport from "./services/passport.js";
+import session from "express-session";
 
 const app = express();
 dotenv.config();
@@ -47,6 +49,22 @@ const fileFilter = (req, file, cb) => {
     cb(null, false);
   }
 };
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Replace with your secret key
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+// const corsOptions = {
+//   credentials: true,
+//   origin: "http://localhost:5173",
+//   methods: "GET,POST,PUT,DELETE",
+// };
 
 app.use(cors());
 app.use(bodyParser.json());
