@@ -128,7 +128,7 @@ export const signUp = async (req, res) => {
     console.log(req.body);
 
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://siiappdev.siidevelopment.com/${userName}/qrcode-info`
+      `https://www.siiapp.net/${userName}/qrcode-info`
     );
 
     const newUser = await userModel.create({
@@ -525,7 +525,7 @@ export const forgetPassword = async (req, res) => {
       },
       secure: true,
     });
-    const resetLink = `https://siiappdev.siidevelopment.com/reset-password/${resetToken}`;
+    const resetLink = `https://www.siiapp.net/reset-password/${resetToken}`;
 
     const mailOptions = {
       from: "sii.app.developer@gmail.com",
@@ -583,7 +583,7 @@ export const generateUserQrCode = async (req, res) => {
       return res.status(422).json({ message: "User Not Found" });
     }
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://siiappdev.siidevelopment.com/${userName}/qrcode-info`
+      `https://www.siiapp.net/${userName}/qrcode-info`
     );
     existingUser.qrCodeUrl = qrCodeUrl;
     await existingUser.save();
