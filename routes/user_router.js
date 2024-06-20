@@ -1,6 +1,7 @@
 import express from "express";
 import { check } from "express-validator";
 import {
+  deleteUserAccount,
   editUserProfile,
   forgetPassword,
   generateUserQrCode,
@@ -22,6 +23,8 @@ import {
 } from "../controllers/user_ctrl/user_ctrl.js";
 import auth from "../middlewares/auth.js";
 import passport from "../services/passport.js";
+import jwt from "jsonwebtoken";
+import { userModel } from "../models/user/user_model.js";
 
 const router = express.Router();
 
@@ -85,8 +88,7 @@ router.get("/search", search);
 router.post("/forget-password", forgetPassword);
 router.put("/reset-password/:token", resetPassword);
 router.post("/generate-qrcode", auth, generateUserQrCode);
-import jwt from "jsonwebtoken";
-import { userModel } from "../models/user/user_model.js";
+router.delete("/delete-account", auth, deleteUserAccount);
 
 // Google OAuth Routes
 router.get(
@@ -121,6 +123,25 @@ router.get(
       console.error("Error in Google callback:", err);
       res.redirect("/login"); // Redirect to login page on error
     }
+  }
+);
+
+router.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
+
+router.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  (req, res) => {
+    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.redirect(
+      `/login?token=${token}&userName=${req.user.userName}&email=${req.user.email}&userId=${req.user.id}`
+    );
   }
 );
 

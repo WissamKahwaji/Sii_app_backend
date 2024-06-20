@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { PostModel } from "../../models/posts/post_model.js";
 import QRCode from "qrcode";
 import nodemailer from "nodemailer";
+import { siiCardModel } from "../../models/sii_card/sii_card_model.js";
 
 dotenv.config();
 
@@ -591,5 +592,28 @@ export const generateUserQrCode = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteUserAccount = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    await PostModel.deleteMany({ owner: userId });
+
+    if (user.siiCard) {
+      await siiCardModel.findByIdAndDelete(user.siiCard);
+    }
+
+    await userModel.findByIdAndDelete(userId);
+
+    res.status(200).json({ message: "User account deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
   }
 };
