@@ -12,6 +12,9 @@ import courseRoutes from "./routes/course_router.js";
 import postRoutes from "./routes/post_router.js";
 import siiCardRoutes from "./routes/sii_card_router.js";
 import foldersRoutes from "./routes/folder_router.js";
+import privacyPolicyRoutes from "./routes/privacy_policy.js";
+import infoHelpRoutes from "./routes/info_help_router.js";
+
 import passport from "./services/passport.js";
 import session from "express-session";
 
@@ -91,6 +94,8 @@ app.use("/course", courseRoutes);
 app.use("/post", postRoutes);
 app.use("/sii-card", siiCardRoutes);
 app.use("/folders", foldersRoutes);
+app.use("/privacy-policy", privacyPolicyRoutes);
+app.use("/info-help", infoHelpRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 
