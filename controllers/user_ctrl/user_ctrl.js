@@ -127,9 +127,13 @@ export const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     console.log(req.body);
-
+    const options = {
+      width: 500,
+      margin: 2,
+    };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiapp.net/${userName}/qrcode-info`
+      `https://www.siiapp.net/${userName}/qrcode-info`,
+      options
     );
 
     const newUser = await userModel.create({
@@ -583,8 +587,13 @@ export const generateUserQrCode = async (req, res) => {
     if (!existingUser) {
       return res.status(422).json({ message: "User Not Found" });
     }
+    const options = {
+      width: 500,
+      margin: 2,
+    };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiapp.net/${userName}/qrcode-info`
+      `https://www.siiapp.net/${userName}/qrcode-info`,
+      options
     );
     existingUser.qrCodeUrl = qrCodeUrl;
     await existingUser.save();
