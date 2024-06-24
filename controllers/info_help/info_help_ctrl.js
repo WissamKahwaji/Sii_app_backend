@@ -29,7 +29,7 @@ export const addInfoHelp = async (req, res) => {
 
 export const sendEmailSuggestion = async (req, res, next) => {
   try {
-    const { message } = req.body;
+    const { email, name, mobile, message } = req.body;
     const transporter = nodemailer.createTransport({
       port: 465,
       host: "smtp.gmail.com",
@@ -45,7 +45,10 @@ export const sendEmailSuggestion = async (req, res, next) => {
       to: "info@siimedia.net",
       subject: `Suggestion`,
       html: `
-          <p>${message}</p>
+      <p><strong>Name:</strong>${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Mobile:</strong> ${mobile}</p>    
+      <p>${message}</p>
         `,
     };
 

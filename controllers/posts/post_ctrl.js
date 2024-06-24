@@ -138,6 +138,7 @@ export const createPost = async (req, res) => {
       tags,
       postType,
       discountPercentage,
+      discountFunctionType,
     } = req.body;
     const userId = req.userId;
     const user = await userModel.findById(userId);
@@ -153,6 +154,7 @@ export const createPost = async (req, res) => {
       tags: tags,
       postType,
       discountPercentage,
+      discountFunctionType,
     });
     if (req.files["postImages"]) {
       const postImages = req.files["postImages"];
@@ -230,6 +232,7 @@ export const editPost = async (req, res) => {
       mobileNumber,
       tags,
       discountPercentage,
+      discountFunctionType,
     } = req.body;
     const post = await PostModel.findById(id);
 
@@ -249,6 +252,7 @@ export const editPost = async (req, res) => {
     if (mobileNumber) post.mobileNumber = mobileNumber;
     if (tags) post.tags = tags;
     if (discountPercentage) post.discountPercentage = discountPercentage;
+    if (discountFunctionType) post.discountFunctionType = discountFunctionType;
 
     const updatedPost = await post.save();
 

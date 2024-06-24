@@ -14,6 +14,7 @@ import siiCardRoutes from "./routes/sii_card_router.js";
 import foldersRoutes from "./routes/folder_router.js";
 import privacyPolicyRoutes from "./routes/privacy_policy.js";
 import infoHelpRoutes from "./routes/info_help_router.js";
+import qrcodeRoutes from "./routes/qrCode_router.js";
 
 import passport from "./services/passport.js";
 import session from "express-session";
@@ -96,6 +97,7 @@ app.use("/sii-card", siiCardRoutes);
 app.use("/folders", foldersRoutes);
 app.use("/privacy-policy", privacyPolicyRoutes);
 app.use("/info-help", infoHelpRoutes);
+app.use("/qrcode", qrcodeRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 

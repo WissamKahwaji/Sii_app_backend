@@ -22,6 +22,10 @@ const postSchema = new mongoose.Schema(
     whatsAppNumber: String,
     mobileNumber: String,
     discountPercentage: Number,
+    discountFunctionType: {
+      type: String,
+      enum: ["get_offer", "send_message"],
+    },
     tags: [String],
     //likes
     likes: [
