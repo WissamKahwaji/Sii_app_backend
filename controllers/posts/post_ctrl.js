@@ -113,7 +113,7 @@ export const getPostById = async (req, res) => {
     const post = await PostModel.findById(id)
       .populate({
         path: "owner",
-        select: "fullName profileImage userName isBusiness",
+        select: "fullName profileImage userName isBusiness email",
       })
       .populate({
         path: "comments",

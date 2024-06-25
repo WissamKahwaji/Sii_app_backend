@@ -68,3 +68,54 @@ export const sendEmailSuggestion = async (req, res, next) => {
     next(error);
   }
 };
+
+export const sendOfferMessage = async (req, res, next) => {
+  try {
+    const { postCaption, toEmail, email, name, mobile, message } = req.body;
+    const transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",
+      secure: true,
+      secureConnection: false,
+      tls: {
+        ciphers: "SSLv3",
+      },
+      requireTLS: true,
+      port: 465,
+      debug: true,
+      connectionTimeout: 10000,
+      auth: {
+        user: "Offers@siimail.net",
+        pass: "Llw@!#kasd2",
+      },
+    });
+
+    const mailOptions = {
+      from: '"SII Offers" <Offers@siimail.net>',
+      to: toEmail,
+      subject: `request Offer`,
+      html: `
+      <p>The user ${name} saw your offer on the post and wants to inquire about the offer</p>
+      <p><strong>Name:</strong>${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Mobile:</strong> ${mobile}</p> 
+      <p><strong>Post:</strong> ${postCaption}</p> 
+      <p><strong>User Message:</strong> ${message}</p>
+        `,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(200).send("Enquiry submitted successfully");
+      }
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};
