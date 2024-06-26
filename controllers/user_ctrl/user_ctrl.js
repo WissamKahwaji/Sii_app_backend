@@ -162,8 +162,8 @@ export const signUp = async (req, res) => {
       debug: true,
       connectionTimeout: 10000,
       auth: {
-        user: "Newaccounts@siimail.net",
-        pass: "Nekas!32!",
+        user: process.env.NEW_ACCOUNT_MAIL,
+        pass: process.env.NEW_ACCOUNT_PASSWORD,
       },
     });
 
@@ -611,18 +611,26 @@ export const forgetPassword = async (req, res) => {
     user.resetTokenExpiration = Date.now() + 3600000;
     await user.save();
     const transporter = nodemailer.createTransport({
-      port: 465,
-      host: "smtp.gmail.com",
-      auth: {
-        user: "sii.app.developer@gmail.com",
-        pass: "xyuf bypy grqf mlot",
-      },
+      host: "smtp.hostinger.com",
       secure: true,
+      secureConnection: false,
+      tls: {
+        ciphers: "SSLv3",
+      },
+      requireTLS: true,
+      port: 465,
+      debug: true,
+      connectionTimeout: 10000,
+      auth: {
+        user: process.env.NEW_ACCOUNT_MAIL,
+        pass: process.env.NEW_ACCOUNT_PASSWORD,
+      },
     });
     const resetLink = `https://www.siiapp.net/reset-password/${resetToken}`;
 
     const mailOptions = {
-      from: "sii.app.developer@gmail.com",
+      from: '"SII" <Newaccounts@siimail.net>',
+      replyTo: "no-reply@siimail.com",
       to: email,
       subject: "Password Reset",
       html: `Click <a href="${resetLink}">here</a> to reset your password.`,

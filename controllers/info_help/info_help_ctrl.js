@@ -31,17 +31,25 @@ export const sendEmailSuggestion = async (req, res, next) => {
   try {
     const { email, name, mobile, message } = req.body;
     const transporter = nodemailer.createTransport({
-      port: 465,
-      host: "smtp.gmail.com",
-      auth: {
-        user: "sii.app.developer@gmail.com",
-        pass: "xyuf bypy grqf mlot",
-      },
+      host: "smtp.hostinger.com",
       secure: true,
+      secureConnection: false,
+      tls: {
+        ciphers: "SSLv3",
+      },
+      requireTLS: true,
+      port: 465,
+      debug: true,
+      connectionTimeout: 10000,
+      auth: {
+        user: process.env.SUGGESTION_MAIL,
+        pass: process.env.SUGGESTION_PASSWORD,
+      },
     });
 
     const mailOptions = {
-      from: "sii.app.developer@gmail.com",
+      from: '"SII" <suggestion@siimail.net>',
+      replyTo: "no-reply@siimail.com",
       to: "info@siimedia.net",
       subject: `Suggestion`,
       html: `
