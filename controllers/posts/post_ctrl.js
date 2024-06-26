@@ -3,6 +3,8 @@
 import { Comment } from "../../models/posts/comment_model.js";
 import { PostModel } from "../../models/posts/post_model.js";
 import { userModel } from "../../models/user/user_model.js";
+import nodemailer from "nodemailer";
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -211,6 +213,58 @@ export const createPost = async (req, res) => {
     const savedPost = await post.save();
     user.posts.push(savedPost._id);
     await user.save();
+    if (discountPercentage) {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.hostinger.com",
+        secure: true,
+        secureConnection: false,
+        tls: {
+          ciphers: "SSLv3",
+        },
+        requireTLS: true,
+        port: 465,
+        debug: true,
+        connectionTimeout: 10000,
+        auth: {
+          user: process.env.OFFERS_MAIL,
+          pass: process.env.OFFERS_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: '"SII" <Offers@siimail.net>',
+        to: user.email,
+        replyTo: "no-reply@siimail.com",
+        subject: `New Post with Discount Created`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: #FECE59;">New Post Created with a Discount!</h2>
+            <p>Dear ${user.fullName},</p>
+            <p>Thank you for creating a new post on our platform. We noticed that your post includes a discount of ${discountPercentage}%.</p>
+            <p>Here are the details of your post:</p>
+            <ul>
+              <li><strong>Caption:</strong> ${caption}</li>
+              
+              <li><strong>Discount Percentage:</strong> ${discountPercentage}%</li>
+              <li><strong>Discount Function Type:</strong> ${discountFunctionType}</li>
+            </ul>
+            <p>If you have any questions or need assistance, feel free to reach out to our support team at <a href="mailto:support@siiapp.net" style="color: #007bff;">support@siiapp.net</a>.</p>
+            <p>Best regards,</p>
+            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <hr>
+            <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
+          </div>
+        `,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+    }
+
     return res.status(201).json(savedPost);
   } catch (error) {
     console.error(error);

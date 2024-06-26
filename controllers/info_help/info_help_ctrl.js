@@ -84,23 +84,32 @@ export const sendOfferMessage = async (req, res, next) => {
       debug: true,
       connectionTimeout: 10000,
       auth: {
-        user: "Offers@siimail.net",
-        pass: "Llw@!#kasd2",
+        user: process.env.OFFERS_MAIL,
+        pass: process.env.OFFERS_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: '"SII Offers" <Offers@siimail.net>',
+      from: '"SII" <Offers@siimail.net>',
       to: toEmail,
       subject: `request Offer`,
       html: `
-      <p>The user ${name} saw your offer on the post and wants to inquire about the offer</p>
-      <p><strong>Name:</strong>${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Mobile:</strong> ${mobile}</p> 
-      <p><strong>Post:</strong> ${postCaption}</p> 
-      <p><strong>User Message:</strong> ${message}</p>
-        `,
+      <p>Dear Sir/Madam,</p>
+      <p>We hope this message finds you well.</p>
+      <p>We are pleased to inform you that <strong>${name}</strong> has shown interest in your offer and would like to inquire further about the details.</p>
+      <p>Below are the details provided by the user:</p>
+      <ul>
+        <li><strong>Name:</strong> ${name}</li>
+        <li><strong>Email:</strong> ${email}</li>
+        <li><strong>Mobile:</strong> ${mobile}</li>
+        <li><strong>Post:</strong> ${postCaption}</li>
+        <li><strong>Message:</strong> ${message}</li>
+      </ul>
+      <p>We appreciate your prompt attention to this inquiry and look forward to your response.</p>
+      <p>Best regards,</p>
+      <p><strong>SII Team</strong></p>
+      <p><em>This is an automated message. Please do not reply to this email.</em></p>
+    `,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

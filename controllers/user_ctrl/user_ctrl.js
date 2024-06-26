@@ -150,7 +150,54 @@ export const signUp = async (req, res) => {
       { expiresIn: "7d" }
     );
     console.log("success");
+    const transporter = nodemailer.createTransport({
+      host: "smtp.hostinger.com",
+      secure: true,
+      secureConnection: false,
+      tls: {
+        ciphers: "SSLv3",
+      },
+      requireTLS: true,
+      port: 465,
+      debug: true,
+      connectionTimeout: 10000,
+      auth: {
+        user: "Newaccounts@siimail.net",
+        pass: "Nekas!32!",
+      },
+    });
 
+    const mailOptions = {
+      from: '"SII" <Newaccounts@siimail.net>',
+      to: email,
+      replyTo: "no-reply@siimail.com",
+      subject: `Welcome to the SII Platform!`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2 style="color: #FECE59;">Welcome to SII, ${fullName}!</h2>
+          <p>Dear ${fullName},</p>
+          <p>Thank you for choosing SII. We are excited to have you on board and look forward to providing you with the best experience possible.</p>
+          <p>Here are some resources to help you get started:</p>
+          <ul>
+            <li><a href="https://www.siiapp.net/${userName}" style="color: #007bff;">Your Account</a></li>
+            <li><a href="https://www.siiapp.net/${userName}/qrcode-info" style="color: #007bff;">Your QR Code Info</a></li>
+            <li><a href="https://www.siiapp.net/help/mail" style="color: #007bff;">Help Center</a></li>
+          </ul>
+          <p>If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:support@siiapp.net" style="color: #007bff;">support@siiapp.net</a>.</p>
+          <p>Best regards,</p>
+          <p style="color: #FECE59;"><strong>The SII Team</strong></p>
+          <hr>
+          <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
+        </div>
+      `,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
     return res.status(201).json({
       result: newUser,
       message: "User created",
@@ -457,6 +504,48 @@ export const toggleFollowUser = async (req, res) => {
       targetUser.followers.push(userId);
       await user.save();
       await targetUser.save();
+      const transporter = nodemailer.createTransport({
+        host: "smtp.hostinger.com",
+        secure: true,
+        secureConnection: false,
+        tls: {
+          ciphers: "SSLv3",
+        },
+        requireTLS: true,
+        port: 465,
+        debug: true,
+        connectionTimeout: 10000,
+        auth: {
+          user: process.env.FOLLOWER_MAIL,
+          pass: process.env.FOLLOWER_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: '"SII" <Newfollower@siimail.net>',
+        to: targetUser.email,
+        replyTo: "no-reply@siimail.com",
+        subject: `You have a new follower!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: #FECE59;">You have a new follower!</h2>
+            <p>Dear ${targetUser.fullName},</p>
+            <p>${user.fullName} has started following you on SII platform.</p>
+            <p>You can view their profile <a href="https://www.siiapp.net/${user.userName}" style="color: #007bff;">here</a>.</p>
+            <p>Best regards,</p>
+            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <hr>
+            <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
+          </div>
+        `,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
       res.status(200).json({ message: "Followed successfully." });
     }
   } catch (error) {
