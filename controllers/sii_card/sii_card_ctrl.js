@@ -62,7 +62,7 @@ export const addSiiCard = async (req, res) => {
     const mailOptions = {
       from: '"SII" <Siicard@siimail.net>',
       to: email,
-      replyTo: "no-reply@siimail.com",
+      replyTo: "no-reply@siimail.net",
       subject: `Welcome to SII Card experience!`,
       html: `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">

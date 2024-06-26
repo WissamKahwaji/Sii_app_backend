@@ -170,7 +170,7 @@ export const signUp = async (req, res) => {
     const mailOptions = {
       from: '"SII" <Newaccounts@siimail.net>',
       to: email,
-      replyTo: "no-reply@siimail.com",
+      replyTo: "no-reply@siimail.net",
       subject: `Welcome to the SII Platform!`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -524,7 +524,7 @@ export const toggleFollowUser = async (req, res) => {
       const mailOptions = {
         from: '"SII" <Newfollower@siimail.net>',
         to: targetUser.email,
-        replyTo: "no-reply@siimail.com",
+        replyTo: "no-reply@siimail.net",
         subject: `You have a new follower!`,
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -630,7 +630,7 @@ export const forgetPassword = async (req, res) => {
 
     const mailOptions = {
       from: '"SII" <Newaccounts@siimail.net>',
-      replyTo: "no-reply@siimail.com",
+      replyTo: "no-reply@siimail.net",
       to: email,
       subject: "Password Reset",
       html: `Click <a href="${resetLink}">here</a> to reset your password.`,

@@ -234,7 +234,7 @@ export const createPost = async (req, res) => {
       const mailOptions = {
         from: '"SII" <Offers@siimail.net>',
         to: user.email,
-        replyTo: "no-reply@siimail.com",
+        replyTo: "no-reply@siimail.net",
         subject: `New Post with Discount Created`,
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6;">

@@ -49,7 +49,7 @@ export const sendEmailSuggestion = async (req, res, next) => {
 
     const mailOptions = {
       from: '"SII" <suggestion@siimail.net>',
-      replyTo: "no-reply@siimail.com",
+      replyTo: "no-reply@siimail.net",
       to: "info@siimedia.net",
       subject: `Suggestion`,
       html: `
