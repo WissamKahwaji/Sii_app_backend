@@ -492,16 +492,20 @@ export const toggleFollowUser = async (req, res) => {
       user.followings = user.followings.filter(
         id => id.toString() !== targetUserId
       );
+      user.followingsNumber = user.followingsNumber - 1;
       targetUser.followers = targetUser.followers.filter(
         id => id.toString() !== userId
       );
+      targetUser.followersNumber = targetUser.followersNumber - 1;
       await user.save();
       await targetUser.save();
       res.status(200).json({ message: "Unfollowed successfully." });
     } else {
       // Follow logic
       user.followings.push(targetUserId);
+      user.followingsNumber = user.followingsNumber + 1;
       targetUser.followers.push(userId);
+      targetUser.followersNumber = targetUser.followersNumber + 1;
       await user.save();
       await targetUser.save();
       const transporter = nodemailer.createTransport({

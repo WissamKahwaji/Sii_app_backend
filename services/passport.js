@@ -60,6 +60,7 @@ passport.use(
         });
         done(null, newUser);
       } catch (err) {
+        console.log(err);
         done(err, null);
       }
     }

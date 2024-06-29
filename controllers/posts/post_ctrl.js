@@ -134,6 +134,7 @@ export const createPost = async (req, res) => {
   try {
     const {
       caption,
+      otherCaptions,
       link,
       whatsAppNumber,
       mobileNumber,
@@ -150,6 +151,7 @@ export const createPost = async (req, res) => {
     const post = new PostModel({
       owner: user.id,
       caption: caption,
+      otherCaptions: otherCaptions,
       link: link,
       whatsAppNumber: whatsAppNumber,
       mobileNumber: mobileNumber,
@@ -190,6 +192,45 @@ export const createPost = async (req, res) => {
       )}`;
       post.postVideo = urlVideo;
     }
+    // if (req.files["video"]) {
+    //   const video = req.files["video"][0];
+    //   const inputVideoPath = video.path.replace(/\\/g, "/");
+    //   const outputVideoPath = path.resolve(
+    //     `images/processed-${video.filename}`
+    //   );
+    //   // const watermarkPath = path.resolve(
+    //   //   `${process.env.BASE_URL}/assets/logo_sii_new_2.png`
+    //   // );
+    //   var ffprocess = new ffmpeg(
+    //     "images/netzoon logo business sound-1719650210506.mp4"
+    //   );
+    //   ffprocess.then(
+    //     function (video) {
+    //       console.log("The video is ready to be processed");
+    //       var watermarkPath = "assets/logo_sii_new_2.png",
+    //         newFilepath = `${process.env.BASE_URL}/assets/video-com-watermark.mp4`,
+    //         settings = {
+    //           position: "SE", // Position: NE NC NW SE SC SW C CE CW
+    //           margin_nord: null, // Margin nord
+    //           margin_sud: null, // Margin sud
+    //           margin_east: null, // Margin east
+    //           margin_west: null, // Margin west
+    //         };
+    //       var callback = function (error, files) {
+    //         if (error) {
+    //           console.log("ERROR: ", error);
+    //         } else {
+    //           console.log("TERMINOU", files);
+    //         }
+    //       };
+    //       //add watermark
+    //       video.fnAddWatermark(watermarkPath, newFilepath, settings, callback);
+    //     },
+    //     function (err) {
+    //       console.log("Error: " + err);
+    //     }
+    //   );
+    // }
     if (req.files["coverVideoImage"]) {
       const coverVideoImage = req.files["coverVideoImage"][0];
       const urlcoverVideoImage = `${
@@ -281,6 +322,7 @@ export const editPost = async (req, res) => {
     const userId = req.userId;
     const {
       caption,
+      otherCaptions,
       link,
       whatsAppNumber,
       mobileNumber,
@@ -301,17 +343,21 @@ export const editPost = async (req, res) => {
     }
 
     if (caption) post.caption = caption;
+    if (otherCaptions) post.otherCaptions = otherCaptions;
+
     if (link) post.link = link;
     if (whatsAppNumber) post.whatsAppNumber = whatsAppNumber;
     if (mobileNumber) post.mobileNumber = mobileNumber;
     if (tags) post.tags = tags;
-    if (discountPercentage) post.discountPercentage = discountPercentage;
+    if (discountPercentage && discountPercentage != "undefined")
+      post.discountPercentage = discountPercentage;
     if (discountFunctionType) post.discountFunctionType = discountFunctionType;
 
     const updatedPost = await post.save();
 
     return res.status(200).json(updatedPost);
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ message: "Something went wrong", error: error });

@@ -18,6 +18,7 @@ const postSchema = new mongoose.Schema(
     coverPdfImage: String,
     postDocs: String,
     caption: String,
+    otherCaptions: [String],
     link: String,
     whatsAppNumber: String,
     mobileNumber: String,

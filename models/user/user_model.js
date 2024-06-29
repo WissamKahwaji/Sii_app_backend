@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    followingsNumber: {
+      type: Number,
+      default: 0,
+    },
     //followers
     followers: [
       {
@@ -72,6 +76,10 @@ const userSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    followersNumber: {
+      type: Number,
+      default: 0,
+    },
     isBusiness: {
       type: Boolean,
       default: false,
