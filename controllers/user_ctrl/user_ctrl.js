@@ -123,8 +123,9 @@ export const signUp = async (req, res) => {
     // const profileUrlImage = profileImage
     //   ? "http://localhost:5001/" + profileImage.path.replace(/\\/g, "/")
     //   : null;
+    let existingUser;
     const normalizedEmail = email.toLowerCase();
-    const existingUser = await userModel.findOne({ email: normalizedEmail });
+    existingUser = await userModel.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res
         .status(422)
