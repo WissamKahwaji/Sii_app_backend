@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { userModel } from "../models/user/user_model.js";
+import QRCode from "qrcode";
 
 passport.use(
   new GoogleStrategy(
@@ -19,13 +20,24 @@ passport.use(
         if (existingUser) {
           return done(null, existingUser);
         }
+        const options = {
+          width: 500,
+          margin: 2,
+        };
+        const qrCodeUrl = await QRCode.toDataURL(
+          `https://www.siiapp.net/${sanitizedUserName}/qrcode-info`,
+          options
+        );
+
         const newUser = await userModel.create({
           userName: sanitizedUserName,
           fullName: profile.displayName,
           email: profile.emails[0].value,
           profileImage: profile.photos[0].value,
           password: "", // No password for Google users
+          qrCodeUrl: qrCodeUrl,
         });
+
         done(null, newUser);
       } catch (err) {
         done(err, null);
