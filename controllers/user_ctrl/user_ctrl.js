@@ -35,7 +35,10 @@ export const signin = async (req, res) => {
       });
     } else {
       // If identifier is a username
-      existingUser = await userModel.findOne({ userName: email });
+      const normalizedUsername = email.toLowerCase();
+      existingUser = await userModel.findOne({
+        userName: { $regex: new RegExp("^" + normalizedUsername + "$", "i") },
+      });
     }
     if (!existingUser)
       return res.status(401).json({ message: "User doesn't exist." });
@@ -127,7 +130,13 @@ export const signUp = async (req, res) => {
         .status(422)
         .json({ message: "User already exists, please login!" });
     }
-
+    const normalizedUserName = userName.toLowerCase();
+    existingUser = await userModel.findOne({ userName: normalizedUserName });
+    if (existingUser) {
+      return res
+        .status(422)
+        .json({ message: "User already exists, please login!" });
+    }
     const hashedPassword = await bcrypt.hash(password, 12);
 
     console.log(req.body);
@@ -141,7 +150,7 @@ export const signUp = async (req, res) => {
     );
 
     const newUser = await userModel.create({
-      userName: userName,
+      userName: normalizedUserName,
       fullName: fullName,
       email: normalizedEmail,
       password: hashedPassword,
