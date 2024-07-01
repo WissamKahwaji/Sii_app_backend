@@ -22,7 +22,10 @@ export const signin = async (req, res) => {
     let existingUser;
     if (/\S+@\S+\.\S+/.test(email)) {
       // If identifier is an email
-      existingUser = await userModel.findOne({ email: email });
+      const normalizedEmail = email.toLowerCase();
+      existingUser = await userModel.findOne({
+        email: { $regex: new RegExp("^" + normalizedEmail + "$", "i") },
+      });
     } else if (/^\+?\d+$/.test(email)) {
       console.log("mobile");
       // If identifier is a mobile number, remove any non-digit characters
@@ -117,7 +120,8 @@ export const signUp = async (req, res) => {
     // const profileUrlImage = profileImage
     //   ? "http://localhost:5001/" + profileImage.path.replace(/\\/g, "/")
     //   : null;
-    const existingUser = await userModel.findOne({ email });
+    const normalizedEmail = email.toLowerCase();
+    const existingUser = await userModel.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res
         .status(422)
@@ -139,7 +143,7 @@ export const signUp = async (req, res) => {
     const newUser = await userModel.create({
       userName: userName,
       fullName: fullName,
-      email: email,
+      email: normalizedEmail,
       password: hashedPassword,
       qrCodeUrl: qrCodeUrl,
     });
