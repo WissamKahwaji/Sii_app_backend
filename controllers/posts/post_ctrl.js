@@ -17,9 +17,48 @@ const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 const execAsync = promisify(exec);
+// export const getAllPosts = async (req, res) => {
+//   try {
+//     const posts = await PostModel.find()
+//       .populate({
+//         path: "owner",
+//         select: "fullName profileImage userName",
+//       })
+//       .populate({
+//         path: "comments",
+//         populate: { path: "user", select: "fullName profileImage userName" },
+//       })
+//       .sort({ _id: -1 });
+
+//     return res.status(200).json(posts);
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Something went wrong", error: error });
+//   }
+// };
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await PostModel.find()
+    const dateThreshold = new Date("2024-07-02");
+
+    // Fetch posts created before 2024-07-02
+    const postsBefore = await PostModel.find({
+      createdAt: { $lt: dateThreshold },
+    })
+      .populate({
+        path: "owner",
+        select: "fullName profileImage userName",
+      })
+      .populate({
+        path: "comments",
+        populate: { path: "user", select: "fullName profileImage userName" },
+      });
+
+    // Fetch posts created after 2024-07-02
+    const postsAfter = await PostModel.find({
+      createdAt: { $gte: dateThreshold },
+    })
       .populate({
         path: "owner",
         select: "fullName profileImage userName",
@@ -30,7 +69,13 @@ export const getAllPosts = async (req, res) => {
       })
       .sort({ _id: -1 });
 
-    return res.status(200).json(posts);
+    // Randomly shuffle the list of posts created before 2024-07-02
+    const shuffledPostsBefore = postsBefore.sort(() => Math.random() - 0.5);
+
+    // Concatenate the two lists
+    const finalPostsList = [...postsAfter, ...shuffledPostsBefore];
+
+    return res.status(200).json(finalPostsList);
   } catch (error) {
     console.error(error);
     return res
@@ -208,10 +253,7 @@ export const createPost = async (req, res) => {
     //     //   "/"
     //     // )}`;
     //     const inputVideoPath = path
-    //       .join(
-    //         __dirname,
-    //         "../../images/netzoon logo business sound-1719905770481.mp4"
-    //       )
+    //       .join(__dirname, `../../images/${video.filename}`)
     //       .replace(/\\/g, "/");
     //     const outputVideoPath = path.resolve(
     //       `images/processed-${video.filename}`
@@ -234,16 +276,19 @@ export const createPost = async (req, res) => {
     //     if (!fs.existsSync(outputDir)) {
     //       fs.mkdirSync(outputDir, { recursive: true });
     //     }
-    //     const outputPath = `${inputVideoPath.split(".")[0]}_2_watermarked.mp4`;
+    //     const outputPath = `${inputVideoPath.split(".")[0]}_watermarked.mp4`;
+    //     const outputUrl = `images/${
+    //       video.filename.split(".")[0]
+    //     }_watermarked.mp4`;
     //     console.log("5555555555555");
     //     // Add watermark and username to the video using ffmpeg
     //     // const ffmpegCommand = `ffmpeg -i ${inputVideoPath} -i ${watermarkPath} -filter_complex "[0:v][1:v] overlay=W-w-10:H-h-10, drawtext=text='@${user.userName}':fontcolor=white:fontsize=24:x=10:y=10" -codec:a copy ${outputPath}`;
-    //     const ffmpegCommand = `ffmpeg -i "${inputVideoPath}" -i "${watermarkPath}" -filter_complex "[0:v][1:v] overlay=W-w-10:H-h-10" -codec:a copy "${outputPath}"`;
+    //     const ffmpegCommand = `ffmpeg -i "${inputVideoPath}" -i "${watermarkPath}" -filter_complex "[0:v][1:v] overlay=W-w-30:(main_h-overlay_h)/1.4" -codec:a copy "${outputPath}"`;
 
     //     console.log("66666666666");
     //     await execAsync(ffmpegCommand);
     //     console.log("77777777777777");
-    //     const urlVideo = `${process.env.BASE_URL}/${outputPath.replace(
+    //     const urlVideo = `${process.env.BASE_URL}/${outputUrl.replace(
     //       /\\/g,
     //       "/"
     //     )}`;

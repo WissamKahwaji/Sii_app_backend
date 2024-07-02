@@ -585,7 +585,6 @@ export const search = async (req, res) => {
         $or: [
           { userName: new RegExp(query, "i") },
           { fullName: new RegExp(query, "i") },
-          { email: new RegExp(query, "i") },
         ],
       })
       .exec();
