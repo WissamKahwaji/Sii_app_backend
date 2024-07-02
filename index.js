@@ -16,6 +16,7 @@ import privacyPolicyRoutes from "./routes/privacy_policy.js";
 import infoHelpRoutes from "./routes/info_help_router.js";
 import qrcodeRoutes from "./routes/qrCode_router.js";
 import cardPrivacyPolicyRoutes from "./routes/card_privacy_policy_router.js";
+import sliderRoutes from "./routes/slider_router.js";
 
 import passport from "./services/passport.js";
 import session from "express-session";
@@ -75,6 +76,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use(
@@ -100,6 +102,7 @@ app.use("/privacy-policy", privacyPolicyRoutes);
 app.use("/info-help", infoHelpRoutes);
 app.use("/qrcode", qrcodeRoutes);
 app.use("/card-privacy-policy", cardPrivacyPolicyRoutes);
+app.use("/slider", sliderRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 

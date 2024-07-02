@@ -4,11 +4,19 @@ import { Comment } from "../../models/posts/comment_model.js";
 import { PostModel } from "../../models/posts/post_model.js";
 import { userModel } from "../../models/user/user_model.js";
 import nodemailer from "nodemailer";
-
+import path from "path";
 import dotenv from "dotenv";
+import ffmpeg from "ffmpeg";
+import { fileURLToPath } from "url";
+import { exec } from "child_process";
+import { promisify } from "util";
+import fs from "fs";
 
 dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
 
+const __dirname = path.dirname(__filename);
+const execAsync = promisify(exec);
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await PostModel.find()
@@ -193,6 +201,58 @@ export const createPost = async (req, res) => {
       post.postVideo = urlVideo;
     }
     // if (req.files["video"]) {
+    //   try {
+    //     const video = req.files["video"][0];
+    //     // const inputVideoPath = `${process.env.BASE_URL}/${video.path.replace(
+    //     //   /\\/g,
+    //     //   "/"
+    //     // )}`;
+    //     const inputVideoPath = path
+    //       .join(
+    //         __dirname,
+    //         "../../images/netzoon logo business sound-1719905770481.mp4"
+    //       )
+    //       .replace(/\\/g, "/");
+    //     const outputVideoPath = path.resolve(
+    //       `images/processed-${video.filename}`
+    //     );
+    //     console.log("111111");
+    //     // Local path to the watermark image
+    //     const watermarkPath = path
+    //       .join(__dirname, "../../assets/watermark.png")
+    //       .replace(/\\/g, "/");
+    //     // const watermarkPath = `${process.env.BASE_URL}/images/logo_sii_new_2.png`;
+    //     console.log(watermarkPath);
+    //     console.log("222222222");
+    //     // Ensure watermark image exists
+    //     if (!fs.existsSync(watermarkPath)) {
+    //       console.log("33333333");
+    //       return res.status(500).json({ message: "Watermark image not found" });
+    //     }
+    //     console.log("4444444444");
+    //     const outputDir = path.dirname(outputVideoPath);
+    //     if (!fs.existsSync(outputDir)) {
+    //       fs.mkdirSync(outputDir, { recursive: true });
+    //     }
+    //     const outputPath = `${inputVideoPath.split(".")[0]}_2_watermarked.mp4`;
+    //     console.log("5555555555555");
+    //     // Add watermark and username to the video using ffmpeg
+    //     // const ffmpegCommand = `ffmpeg -i ${inputVideoPath} -i ${watermarkPath} -filter_complex "[0:v][1:v] overlay=W-w-10:H-h-10, drawtext=text='@${user.userName}':fontcolor=white:fontsize=24:x=10:y=10" -codec:a copy ${outputPath}`;
+    //     const ffmpegCommand = `ffmpeg -i "${inputVideoPath}" -i "${watermarkPath}" -filter_complex "[0:v][1:v] overlay=W-w-10:H-h-10" -codec:a copy "${outputPath}"`;
+
+    //     console.log("66666666666");
+    //     await execAsync(ffmpegCommand);
+    //     console.log("77777777777777");
+    //     const urlVideo = `${process.env.BASE_URL}/${outputPath.replace(
+    //       /\\/g,
+    //       "/"
+    //     )}`;
+    //     post.postVideo = urlVideo;
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
+    // if (req.files["video"]) {
     //   const video = req.files["video"][0];
     //   const inputVideoPath = video.path.replace(/\\/g, "/");
     //   const outputVideoPath = path.resolve(
@@ -201,21 +261,27 @@ export const createPost = async (req, res) => {
     //   // const watermarkPath = path.resolve(
     //   //   `${process.env.BASE_URL}/assets/logo_sii_new_2.png`
     //   // );
-    //   var ffprocess = new ffmpeg(
-    //     "images/netzoon logo business sound-1719650210506.mp4"
-    //   );
+    //   const videoPath = video.path;
+    //   const watermarkPath = path
+    //     .join(__dirname, "assets/logo_sii_new_2.png")
+    //     .replace(/\\/g, "/");
+
+    //   const outputPath = `${videoPath.split(".")[0]}_watermarked.${
+    //     videoPath.split(".")[1]
+    //   }`;
+    //   const settings = {
+    //     position: "SE", // Position: NE NC NW SE SC SW C CE CW
+    //     margin_nord: null, // Margin nord
+    //     margin_sud: null, // Margin sud
+    //     margin_east: null, // Margin east
+    //     margin_west: null, // Margin west
+    //   };
+    //   var ffprocess = new ffmpeg(videoPath);
     //   ffprocess.then(
     //     function (video) {
     //       console.log("The video is ready to be processed");
-    //       var watermarkPath = "assets/logo_sii_new_2.png",
-    //         newFilepath = `${process.env.BASE_URL}/assets/video-com-watermark.mp4`,
-    //         settings = {
-    //           position: "SE", // Position: NE NC NW SE SC SW C CE CW
-    //           margin_nord: null, // Margin nord
-    //           margin_sud: null, // Margin sud
-    //           margin_east: null, // Margin east
-    //           margin_west: null, // Margin west
-    //         };
+    //       // var watermarkPath = "assets/logo_sii_new_2.png",
+    //       // outputPath, settings;
     //       var callback = function (error, files) {
     //         if (error) {
     //           console.log("ERROR: ", error);
@@ -224,7 +290,7 @@ export const createPost = async (req, res) => {
     //         }
     //       };
     //       //add watermark
-    //       video.fnAddWatermark(watermarkPath, newFilepath, settings, callback);
+    //       video.fnAddWatermark(watermarkPath, outputPath, settings, callback);
     //     },
     //     function (err) {
     //       console.log("Error: " + err);
