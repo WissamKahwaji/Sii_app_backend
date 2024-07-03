@@ -2,6 +2,7 @@ import express from "express";
 import { check } from "express-validator";
 import {
   addToUserSearch,
+  deleteFromUserSearch,
   deleteUserAccount,
   editUserProfile,
   forgetPassword,
@@ -92,6 +93,7 @@ router.put("/reset-password/:token", resetPassword);
 router.post("/generate-qrcode", auth, generateUserQrCode);
 router.delete("/delete-account", auth, deleteUserAccount);
 router.post("/add-to-search", auth, addToUserSearch);
+router.put("/delete-from-search", auth, deleteFromUserSearch);
 router.get("/get-search-history", auth, getUserSearchHistory);
 
 // Google OAuth Routes

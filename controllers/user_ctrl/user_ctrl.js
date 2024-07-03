@@ -7,6 +7,7 @@ import { PostModel } from "../../models/posts/post_model.js";
 import QRCode from "qrcode";
 import nodemailer from "nodemailer";
 import { siiCardModel } from "../../models/sii_card/sii_card_model.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -769,6 +770,32 @@ export const addToUserSearch = async (req, res) => {
       }
     }
 
+    return res.status(200).json("success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+export const deleteFromUserSearch = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { searchQuery, type } = req.body;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const searchQueryObjectId = new mongoose.Types.ObjectId(searchQuery);
+    if (type === "user") {
+      user.userSearch.users = user.userSearch.users.filter(
+        query => !query.equals(searchQueryObjectId)
+      );
+    } else if (type === "post") {
+      user.userSearch.posts = user.userSearch.posts.filter(
+        query => !query.equals(searchQueryObjectId)
+      );
+    }
+
+    await user.save();
     return res.status(200).json("success");
   } catch (error) {
     console.error(error);
