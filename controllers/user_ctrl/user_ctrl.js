@@ -743,7 +743,6 @@ export const deleteUserAccount = async (req, res) => {
 
 export const addToUserSearch = async (req, res) => {
   try {
-    console.log("11111111");
     const userId = req.userId;
     const { searchQuery, type } = req.body;
     const user = await userModel.findById(userId);
