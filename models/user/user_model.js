@@ -92,6 +92,24 @@ const userSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    // userSearch: [
+    //   {
+    //     type: String,
+    //     default: [],
+    //   },
+    // ],
+    userSearch: {
+      users: {
+        type: [mongoose.Schema.Types.ObjectId],
+        default: [],
+        ref: "Users",
+      },
+      posts: {
+        type: [mongoose.Schema.Types.ObjectId],
+        default: [],
+        ref: "post",
+      },
+    },
     userAbout: {
       aboutUs: String,
       ourMission: String,

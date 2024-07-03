@@ -2,7 +2,7 @@ import { userModel } from "../../models/user/user_model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
-import dotenv from "dotenv";
+import dotenv, { populate } from "dotenv";
 import { PostModel } from "../../models/posts/post_model.js";
 import QRCode from "qrcode";
 import nodemailer from "nodemailer";
@@ -735,6 +735,74 @@ export const deleteUserAccount = async (req, res) => {
     await userModel.findByIdAndDelete(userId);
 
     res.status(200).json({ message: "User account deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const addToUserSearch = async (req, res) => {
+  try {
+    console.log("11111111");
+    const userId = req.userId;
+    const { searchQuery, type } = req.body;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    // if (!user.userSearch.includes(searchQuery)) {
+    //   user.userSearch.push(searchQuery);
+    //   await user.save();
+    // }
+    if (type === "user") {
+      const users = user.userSearch.users;
+      if (!users.includes(searchQuery)) {
+        users.push(searchQuery);
+        user.userSearch.users = users;
+        await user.save();
+      }
+    } else if (type === "post") {
+      const posts = user.userSearch.posts;
+      if (!posts.includes(searchQuery)) {
+        posts.push(searchQuery);
+        user.userSearch.posts = posts;
+        await user.save();
+      }
+    }
+
+    return res.status(200).json("success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const getUserSearchHistory = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await userModel.findById(userId).populate({
+      path: "userSearch",
+      populate: [
+        {
+          path: "users",
+          select: "userName profilePhoto fullName",
+        },
+        {
+          path: "posts",
+          select: "owner caption postType",
+          populate: {
+            path: "owner",
+            select: "userName profilePhoto fullName",
+          },
+        },
+      ],
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const users = user.userSearch.users;
+    const posts = user.userSearch.posts;
+    return res.status(200).json({ users, posts });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });

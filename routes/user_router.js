@@ -1,6 +1,7 @@
 import express from "express";
 import { check } from "express-validator";
 import {
+  addToUserSearch,
   deleteUserAccount,
   editUserProfile,
   forgetPassword,
@@ -13,6 +14,7 @@ import {
   getUserFollowings,
   getUserLikedPosts,
   getUserSavedPosts,
+  getUserSearchHistory,
   resetPassword,
   search,
   signUp,
@@ -89,6 +91,8 @@ router.post("/forget-password", forgetPassword);
 router.put("/reset-password/:token", resetPassword);
 router.post("/generate-qrcode", auth, generateUserQrCode);
 router.delete("/delete-account", auth, deleteUserAccount);
+router.post("/add-to-search", auth, addToUserSearch);
+router.get("/get-search-history", auth, getUserSearchHistory);
 
 // Google OAuth Routes
 router.get(
