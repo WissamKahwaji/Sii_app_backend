@@ -36,6 +36,7 @@ passport.use(
           profileImage: profile.photos[0].value,
           password: "", // No password for Google users
           qrCodeUrl: qrCodeUrl,
+          accountType: "personal",
         });
 
         done(null, newUser);

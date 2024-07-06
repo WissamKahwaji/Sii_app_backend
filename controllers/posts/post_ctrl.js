@@ -213,6 +213,9 @@ export const createPost = async (req, res) => {
       discountPercentage,
       discountFunctionType,
     });
+    if (discountPercentage) {
+      post.agreedToPolicy = true;
+    }
     if (req.files["postImages"]) {
       const postImages = req.files["postImages"];
       const imageUrls = [];
@@ -566,6 +569,83 @@ export const toggleSavePost = async (req, res) => {
       post.saves.push(userId);
       await post.save();
       res.status(200).json("Post Saved successfully");
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error });
+  }
+};
+
+export const toggleInterestingPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const post = await PostModel.findById(id).populate("owner");
+
+    if (!post) {
+      return res.status(404).json({ message: " Post not found" });
+    }
+    const user = await userModel.findById(userId);
+    const existingInterestedIndex = user.interestingPosts.findIndex(
+      interestId => interestId.equals(id)
+    );
+    if (existingInterestedIndex !== -1) {
+      user.interestingPosts.splice(existingInterestedIndex, 1);
+      await user.save();
+      post.interests.splice(existingInterestedIndex, 1);
+      await post.save();
+      res.status(200).json("The post has been removed from the interest list");
+    } else {
+      user.interestingPosts.push(id);
+      await user.save();
+      post.interests.push(userId);
+      await post.save();
+      const transporter = nodemailer.createTransport({
+        host: "smtp.hostinger.com",
+        secure: true,
+        secureConnection: false,
+        tls: {
+          ciphers: "SSLv3",
+        },
+        requireTLS: true,
+        port: 465,
+        debug: true,
+        connectionTimeout: 10000,
+        auth: {
+          user: process.env.NEW_INTEREST_MAIL,
+          pass: process.env.NEW_INTEREST_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: '"SII" <NewInterest@siimail.net>',
+        to: post.owner.email,
+        replyTo: "no-reply@siimail.net",
+        subject: `You have a new interest!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2 style="color: #FECE59;">You have a new interest!</h2>
+            <p>Dear ${post.owner.fullName},</p>
+            <p>${user.fullName} has interested in your post on SII platform.</p>
+            <p>The Post is : ${post.caption}</p>
+            <p>You can view their profile <a href="https://www.siiapp.net/${user.userName}" style="color: #007bff;">here</a>.</p>
+            <p>Best regards,</p>
+            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <hr>
+            <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
+          </div>
+        `,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+      res.status(200).json("The post has been added to your interest list");
     }
   } catch (error) {
     console.log(error);

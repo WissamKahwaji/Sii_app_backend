@@ -13,6 +13,7 @@ import {
   getUserByUserName,
   getUserFollowers,
   getUserFollowings,
+  getUserInterestedPosts,
   getUserLikedPosts,
   getUserSavedPosts,
   getUserSearchHistory,
@@ -79,11 +80,12 @@ router.post("/switchAccount", auth, switchAccount);
 router.get("/ById", auth, getUserById);
 
 router.put("/edit-profile", auth, editUserProfile);
-router.get("/user-followings", auth, getUserFollowings);
-router.get("/user-followers", auth, getUserFollowers);
+router.get("/user-followings/:userId", getUserFollowings);
+router.get("/user-followers/:userId", getUserFollowers);
 router.get("/user-accounts", auth, getUserAccounts);
-router.get("/user-liked-posts", auth, getUserLikedPosts);
-router.get("/user-saved-posts", auth, getUserSavedPosts);
+router.get("/user-liked-posts/:userId", getUserLikedPosts);
+router.get("/user-saved-posts/:userId", getUserSavedPosts);
+router.get("/user-interested-posts/:userId", getUserInterestedPosts);
 router.get("/by-userName/:userName", getUserByUserName);
 router.post("/toggle-follow/:id", auth, toggleFollowUser);
 router.get("/userCategory/:userCategory", getUserByUserCategory);

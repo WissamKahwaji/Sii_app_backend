@@ -53,6 +53,14 @@ const postSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    interests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    agreedToPolicy: Boolean,
   },
   { timestamps: true }
 );

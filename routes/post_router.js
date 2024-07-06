@@ -10,6 +10,7 @@ import {
   getUserDocsPosts,
   getUserPosts,
   getUserVideosPosts,
+  toggleInterestingPost,
   toggleLike,
   toggleSavePost,
 } from "../controllers/posts/post_ctrl.js";
@@ -25,6 +26,8 @@ router.post("/create", auth, createPost);
 router.put("/edit/:id", auth, editPost);
 router.delete("/delete/:id", auth, deletePost);
 router.put("/:id/toggleLike", auth, toggleLike);
+router.put("/:id/toggle-interesting-post", auth, toggleInterestingPost);
+
 router.get("/:id/comments", auth, getPostComments);
 router.post("/:id/add-comment", auth, addCommentToPost);
 router.put("/:id/toggle-save-post", auth, toggleSavePost);

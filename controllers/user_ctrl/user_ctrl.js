@@ -113,7 +113,16 @@ export const switchAccount = async (req, res) => {
 
 export const signUp = async (req, res) => {
   try {
-    const { userName, fullName, email, password } = req.body;
+    const {
+      userName,
+      fullName,
+      email,
+      password,
+      mobileNumber,
+      accountType,
+      userCategory,
+    } = req.body;
+
     // const profileImage = req.files["profileImage"]
     //   ? req.files["profileImage"][0]
     //   : null;
@@ -157,8 +166,14 @@ export const signUp = async (req, res) => {
       email: normalizedEmail,
       password: hashedPassword,
       qrCodeUrl: qrCodeUrl,
+      accountType: accountType,
     });
-
+    if (mobileNumber) newUser.mobileNumber = mobileNumber;
+    if (userCategory) newUser.userCategory = userCategory;
+    if (accountType === "business") {
+      newUser.isBusiness = true;
+    }
+    await newUser.save();
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id },
       process.env.JWT_SECRET_KEY,
@@ -262,9 +277,9 @@ export const getUserByUserCategory = async (req, res) => {
 
 export const getUserFollowings = async (req, res) => {
   try {
-    const id = req.userId;
+    const { userId } = req.params;
     const userFollowings = await userModel
-      .findById(id)
+      .findById(userId)
       .select(["userName", "fullName", "followings"])
       .populate("followings");
     const followings = userFollowings.followings;
@@ -277,9 +292,9 @@ export const getUserFollowings = async (req, res) => {
 
 export const getUserFollowers = async (req, res) => {
   try {
-    const id = req.userId;
+    const { userId } = req.params;
     const userFollowers = await userModel
-      .findById(id)
+      .findById(userId)
       .select(["userName", "fullName", "followers"])
       .populate("followers");
     const followers = userFollowers.followers;
@@ -375,7 +390,7 @@ export const addUserAccount = async (req, res) => {
 
 export const getUserLikedPosts = async (req, res) => {
   try {
-    const userId = req.userId;
+    const { userId } = req.params;
     const user = await userModel
       .findById(userId)
       .select("likedPosts")
@@ -400,7 +415,7 @@ export const getUserLikedPosts = async (req, res) => {
 
 export const getUserSavedPosts = async (req, res) => {
   try {
-    const userId = req.userId;
+    const { userId } = req.params;
     const user = await userModel
       .findById(userId)
       .select("savedPosts")
@@ -423,6 +438,30 @@ export const getUserSavedPosts = async (req, res) => {
   }
 };
 
+export const getUserInterestedPosts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await userModel
+      .findById(userId)
+      .select("interestingPosts")
+      .populate({
+        path: "interestingPosts",
+        populate: {
+          path: "owner",
+          select: "fullName profileImage",
+        },
+      });
+    if (!user) {
+      return res.status(404).json({ message: "User Not found" });
+    }
+
+    const interestingPosts = user.interestingPosts;
+    return res.status(200).json(interestingPosts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: `Error : ${error}` });
+  }
+};
 export const editUserProfile = async (req, res) => {
   try {
     console.log("Edit User Profile");
@@ -440,9 +479,13 @@ export const editUserProfile = async (req, res) => {
       userCategory,
       location,
       userAbout,
-      isBusiness,
+      accountType,
+      showLikedPosts,
+      showSavedPosts,
+      showInterestedPosts,
+      showFollowingsList,
     } = req.body;
-    console.log(isBusiness);
+
     const imgPath =
       req.files && req.files["profileImage"]
         ? req.files["profileImage"][0].path
@@ -465,7 +508,16 @@ export const editUserProfile = async (req, res) => {
     }
     if (userCategory) user.userCategory = userCategory;
     if (userAbout) user.userAbout = userAbout;
-    if (isBusiness) user.isBusiness = isBusiness;
+    if (showLikedPosts) user.showLikedPosts = showLikedPosts;
+    if (showSavedPosts) user.showSavedPosts = showSavedPosts;
+    if (showInterestedPosts) user.showInterestedPosts = showInterestedPosts;
+    if (showFollowingsList) user.showFollowingsList = showFollowingsList;
+    if (accountType) user.accountType = accountType;
+    if (accountType === "business") {
+      user.isBusiness = true;
+    } else {
+      user.isBusiness = false;
+    }
 
     if (req.files && req.files["doc"]) {
       const doc = req.files["doc"][0];
@@ -587,6 +639,7 @@ export const search = async (req, res) => {
           { userName: new RegExp(query, "i") },
           { fullName: new RegExp(query, "i") },
         ],
+        accountType: { $ne: "personal" },
       })
       .exec();
 

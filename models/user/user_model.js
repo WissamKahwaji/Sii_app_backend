@@ -56,6 +56,14 @@ const userSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    //interesting posts
+    interestingPosts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "post",
+        default: [],
+      },
+    ],
     //followings
     followings: [
       {
@@ -83,6 +91,31 @@ const userSchema = new mongoose.Schema(
     isBusiness: {
       type: Boolean,
       default: false,
+    },
+    accountType: {
+      type: String,
+      enum: ["personal", "creator", "business"],
+      default: "personal",
+    },
+    showLikedPosts: {
+      type: String,
+      enum: ["onlyYou", "everyone"],
+      default: "onlyYou",
+    },
+    showSavedPosts: {
+      type: String,
+      enum: ["onlyYou", "everyone"],
+      default: "onlyYou",
+    },
+    showInterestedPosts: {
+      type: String,
+      enum: ["onlyYou", "everyone"],
+      default: "onlyYou",
+    },
+    showFollowingsList: {
+      type: String,
+      enum: ["onlyYou", "everyone"],
+      default: "onlyYou",
     },
     userCategory: String,
     userAccounts: [
