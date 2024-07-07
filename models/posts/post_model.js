@@ -23,6 +23,8 @@ const postSchema = new mongoose.Schema(
     whatsAppNumber: String,
     mobileNumber: String,
     discountPercentage: Number,
+    startDiscountDate: String,
+    endDiscountDate: String,
     discountFunctionType: {
       type: String,
       enum: ["get_offer", "send_message"],

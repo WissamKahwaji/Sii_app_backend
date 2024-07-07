@@ -195,11 +195,19 @@ export const createPost = async (req, res) => {
       postType,
       discountPercentage,
       discountFunctionType,
+      startDiscountDate,
+      endDiscountDate,
     } = req.body;
     const userId = req.userId;
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User Not found" });
+    }
+    if (discountPercentage && (!startDiscountDate || !endDiscountDate)) {
+      return res.status(400).json({
+        message:
+          "startDiscountDate and endDiscountDate are required when discount is applied.",
+      });
     }
     const post = new PostModel({
       owner: user.id,
@@ -212,7 +220,10 @@ export const createPost = async (req, res) => {
       postType,
       discountPercentage,
       discountFunctionType,
+      startDiscountDate,
+      endDiscountDate,
     });
+
     if (discountPercentage) {
       post.agreedToPolicy = true;
     }
@@ -441,8 +452,10 @@ export const editPost = async (req, res) => {
       whatsAppNumber,
       mobileNumber,
       tags,
-      discountPercentage,
+      // discountPercentage,
       discountFunctionType,
+
+      endDiscountDate,
     } = req.body;
     const post = await PostModel.findById(id);
 
@@ -463,9 +476,10 @@ export const editPost = async (req, res) => {
     if (whatsAppNumber) post.whatsAppNumber = whatsAppNumber;
     if (mobileNumber) post.mobileNumber = mobileNumber;
     if (tags) post.tags = tags;
-    if (discountPercentage && discountPercentage != "undefined")
-      post.discountPercentage = discountPercentage;
+    // if (discountPercentage && discountPercentage != "undefined")
+    //   post.discountPercentage = discountPercentage;
     if (discountFunctionType) post.discountFunctionType = discountFunctionType;
+    if (endDiscountDate) post.endDiscountDate = endDiscountDate;
 
     const updatedPost = await post.save();
 
