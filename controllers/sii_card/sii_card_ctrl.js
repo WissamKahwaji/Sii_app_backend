@@ -31,13 +31,17 @@ export const addSiiCard = async (req, res) => {
     const userName = user.userName;
 
     const cardNumber = await generateUniqueCardNumber();
-
+    const startDate = new Date();
+    const expireDate = new Date(startDate);
+    expireDate.setFullYear(startDate.getFullYear() + 1);
     const newSiiCard = new siiCardModel({
       fullName,
       email,
       mobileNumber,
       userName,
       cardNumber,
+      startDate,
+      expireDate,
     });
     const savedCard = await newSiiCard.save();
     user.siiCard = savedCard._id;

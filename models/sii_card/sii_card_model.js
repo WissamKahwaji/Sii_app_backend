@@ -22,6 +22,14 @@ const siiCardSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  expireDate: {
+    type: Date,
+    required: true,
+  },
 });
 
 export const siiCardModel = mongoose.model("SiiCard", siiCardSchema);

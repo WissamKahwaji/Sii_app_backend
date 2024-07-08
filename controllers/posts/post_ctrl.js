@@ -40,12 +40,8 @@ const execAsync = promisify(exec);
 // };
 export const getAllPosts = async (req, res) => {
   try {
-    const dateThreshold = new Date("2024-07-02");
-
-    // Fetch posts created before 2024-07-02
-    const postsBefore = await PostModel.find({
-      createdAt: { $lt: dateThreshold },
-    })
+    // Fetch all posts
+    const allPosts = await PostModel.find()
       .populate({
         path: "owner",
         select: "fullName profileImage userName",
@@ -55,27 +51,9 @@ export const getAllPosts = async (req, res) => {
         populate: { path: "user", select: "fullName profileImage userName" },
       });
 
-    // Fetch posts created after 2024-07-02
-    const postsAfter = await PostModel.find({
-      createdAt: { $gte: dateThreshold },
-    })
-      .populate({
-        path: "owner",
-        select: "fullName profileImage userName",
-      })
-      .populate({
-        path: "comments",
-        populate: { path: "user", select: "fullName profileImage userName" },
-      })
-      .sort({ _id: -1 });
+    const shuffledPosts = allPosts.sort(() => Math.random() - 0.5);
 
-    // Randomly shuffle the list of posts created before 2024-07-02
-    const shuffledPostsBefore = postsBefore.sort(() => Math.random() - 0.5);
-
-    // Concatenate the two lists
-    const finalPostsList = [...postsAfter, ...shuffledPostsBefore];
-
-    return res.status(200).json(finalPostsList);
+    return res.status(200).json(shuffledPosts);
   } catch (error) {
     console.error(error);
     return res
