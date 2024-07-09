@@ -686,3 +686,40 @@ export const addCommentToPost = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const ratePost = async (req, res) => {
+  const { postId, rating } = req.body;
+  const userId = req.userId;
+
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ message: "Invalid rating value" });
+  }
+
+  try {
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Check if user has already rated this post
+    const existingRatingIndex = post.ratings.findIndex(
+      rate => rate.userId && rate.userId.toString() === userId
+    );
+
+    if (existingRatingIndex !== -1) {
+      post.ratings[existingRatingIndex].rating = rating;
+    } else {
+      post.ratings.push({ userId, rating });
+    }
+
+    post.averageRating = post.calculateAverageRating();
+    await post.save();
+
+    res
+      .status(200)
+      .json({ message: "Rating submitted", averageRating: post.averageRating });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong", error });
+  }
+};

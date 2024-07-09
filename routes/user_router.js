@@ -17,6 +17,7 @@ import {
   getUserLikedPosts,
   getUserSavedPosts,
   getUserSearchHistory,
+  rateUser,
   resetPassword,
   search,
   signUp,
@@ -97,6 +98,7 @@ router.delete("/delete-account", auth, deleteUserAccount);
 router.post("/add-to-search", auth, addToUserSearch);
 router.put("/delete-from-search", auth, deleteFromUserSearch);
 router.get("/get-search-history", auth, getUserSearchHistory);
+router.put("/rate-user", auth, rateUser);
 
 // Google OAuth Routes
 router.get(

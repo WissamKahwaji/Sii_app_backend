@@ -10,6 +10,7 @@ import {
   getUserDocsPosts,
   getUserPosts,
   getUserVideosPosts,
+  ratePost,
   toggleInterestingPost,
   toggleLike,
   toggleSavePost,
@@ -32,5 +33,6 @@ router.get("/:id/comments", auth, getPostComments);
 router.post("/:id/add-comment", auth, addCommentToPost);
 router.put("/:id/toggle-save-post", auth, toggleSavePost);
 router.get("/:id", getPostById);
+router.put("/rate-post", auth, ratePost);
 
 export default router;

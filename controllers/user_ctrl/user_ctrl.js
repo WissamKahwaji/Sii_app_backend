@@ -78,9 +78,32 @@ export const switchAccount = async (req, res) => {
     const mainUser = await userModel.findById(id);
     if (!mainUser)
       return res.status(401).json({ message: "User doesn't exist." });
-    const existingUser = await userModel.findOne({ email });
+    let existingUser;
+    if (/\S+@\S+\.\S+/.test(email)) {
+      // If identifier is an email
+      const normalizedEmail = email.toLowerCase();
+      existingUser = await userModel.findOne({
+        email: { $regex: new RegExp("^" + normalizedEmail + "$", "i") },
+      });
+    } else if (/^\+?\d+$/.test(email)) {
+      console.log("mobile");
+      // If identifier is a mobile number, remove any non-digit characters
+
+      existingUser = await userModel.findOne({
+        mobileNumber: email.toString(),
+      });
+    } else {
+      // If identifier is a username
+      const normalizedUsername = email.toLowerCase();
+      existingUser = await userModel.findOne({
+        userName: { $regex: new RegExp("^" + normalizedUsername + "$", "i") },
+      });
+    }
     if (!existingUser)
       return res.status(401).json({ message: "User doesn't exist." });
+    // const existingUser = await userModel.findOne({ email });
+    // if (!existingUser)
+    //   return res.status(401).json({ message: "User doesn't exist." });
     if (mainUser.userName === existingUser.userName) {
       return res.status(401).json({ message: "You can't add same account" });
     }
@@ -322,7 +345,15 @@ export const getUserAccounts = async (req, res) => {
 
 export const signupWithAddAccount = async (req, res) => {
   try {
-    const { userName, fullName, email, password } = req.body;
+    const {
+      userName,
+      fullName,
+      email,
+      password,
+      mobileNumber,
+      accountType,
+      userCategory,
+    } = req.body;
     const id = req.userId;
 
     const existingUser = await userModel.findById(id);
@@ -334,7 +365,22 @@ export const signupWithAddAccount = async (req, res) => {
       return res.json(error);
     }
 
-    const existingNewUser = await userModel.findOne({ email });
+    // const existingNewUser = await userModel.findOne({ email });
+    // if (existingNewUser) {
+    //   return res
+    //     .status(422)
+    //     .json({ message: "User already exists, please login!" });
+    // }
+    let existingNewUser;
+    const normalizedEmail = email.toLowerCase();
+    existingNewUser = await userModel.findOne({ email: normalizedEmail });
+    if (existingNewUser) {
+      return res
+        .status(422)
+        .json({ message: "User already exists, please login!" });
+    }
+    const normalizedUserName = userName.toLowerCase();
+    existingNewUser = await userModel.findOne({ userName: normalizedUserName });
     if (existingNewUser) {
       return res
         .status(422)
@@ -344,14 +390,28 @@ export const signupWithAddAccount = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     console.log(req.body);
+    const options = {
+      width: 500,
+      margin: 2,
+    };
+    const qrCodeUrl = await QRCode.toDataURL(
+      `https://www.siiapp.net/${userName}/qrcode-info`,
+      options
+    );
 
     const newUser = await userModel.create({
       userName: userName,
       fullName: fullName,
       email: email,
       password: hashedPassword,
+      qrCodeUrl: qrCodeUrl,
+      accountType: accountType,
     });
-
+    if (mobileNumber) newUser.mobileNumber = mobileNumber;
+    if (userCategory) newUser.userCategory = userCategory;
+    if (accountType === "business") {
+      newUser.isBusiness = true;
+    }
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id },
       process.env.JWT_SECRET_KEY,
@@ -885,5 +945,46 @@ export const getUserSearchHistory = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const rateUser = async (req, res) => {
+  const { userId, rating } = req.body;
+  const raterId = req.userId;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({ message: "Rating must be between 1 and 5" });
+  }
+
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const existingRatingIndex = user.ratings.findIndex(
+      rate => rate.user.toString() === raterId
+    );
+
+    if (existingRatingIndex !== -1) {
+      user.ratings[existingRatingIndex].rating = rating;
+    } else {
+      user.ratings.push({ user: raterId, rating });
+    }
+
+    user.averageRating = user.calculateAverageRating();
+    await user.save();
+
+    res.status(200).json({
+      message: "Rating submitted successfully",
+      averageRating: user.averageRating,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };

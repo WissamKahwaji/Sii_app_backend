@@ -164,6 +164,16 @@ const userSchema = new mongoose.Schema(
       otherLink: String,
       companyProfile: String,
     },
+    ratings: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+      },
+    ],
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
     resetToken: String,
     resetTokenExpiration: Date,
   },
@@ -174,5 +184,11 @@ const userSchema = new mongoose.Schema(
     },
   }
 );
+
+userSchema.methods.calculateAverageRating = function () {
+  if (this.ratings.length === 0) return 0;
+  const sum = this.ratings.reduce((acc, rating) => acc + rating.rating, 0);
+  return sum / this.ratings.length;
+};
 
 export const userModel = mongoose.model("Users", userSchema);

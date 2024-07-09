@@ -34,6 +34,7 @@ export const addSiiCard = async (req, res) => {
     const startDate = new Date();
     const expireDate = new Date(startDate);
     expireDate.setFullYear(startDate.getFullYear() + 1);
+    expireDate.setDate(expireDate.getDate() - 1);
     const newSiiCard = new siiCardModel({
       fullName,
       email,
