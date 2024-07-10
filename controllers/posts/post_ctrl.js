@@ -38,10 +38,38 @@ const execAsync = promisify(exec);
 //       .json({ message: "Something went wrong", error: error });
 //   }
 // };
+// export const getAllPosts = async (req, res) => {
+//   try {
+//     // Fetch all posts
+//     const allPosts = await PostModel.find()
+//       .populate({
+//         path: "owner",
+//         select: "fullName profileImage userName",
+//       })
+//       .populate({
+//         path: "comments",
+//         populate: { path: "user", select: "fullName profileImage userName" },
+//       });
+
+//     const shuffledPosts = allPosts.sort(() => Math.random() - 0.5);
+
+//     return res.status(200).json(shuffledPosts);
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Something went wrong", error: error });
+//   }
+// };
+
 export const getAllPosts = async (req, res) => {
   try {
-    // Fetch all posts
-    const allPosts = await PostModel.find()
+    // Get the current date and set the time to 00:00:00
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Fetch posts uploaded today
+    const todayPosts = await PostModel.find({ createdAt: { $gte: today } })
       .populate({
         path: "owner",
         select: "fullName profileImage userName",
@@ -51,9 +79,27 @@ export const getAllPosts = async (req, res) => {
         populate: { path: "user", select: "fullName profileImage userName" },
       });
 
-    const shuffledPosts = allPosts.sort(() => Math.random() - 0.5);
+    // Fetch posts uploaded before today
+    const beforeTodayPosts = await PostModel.find({ createdAt: { $lt: today } })
+      .populate({
+        path: "owner",
+        select: "fullName profileImage userName",
+      })
+      .populate({
+        path: "comments",
+        populate: { path: "user", select: "fullName profileImage userName" },
+      });
 
-    return res.status(200).json(shuffledPosts);
+    // Shuffle both lists
+    const shuffledTodayPosts = todayPosts.sort(() => Math.random() - 0.5);
+    const shuffledBeforeTodayPosts = beforeTodayPosts.sort(
+      () => Math.random() - 0.5
+    );
+
+    // Combine both lists
+    const finalPostList = [...shuffledTodayPosts, ...shuffledBeforeTodayPosts];
+
+    return res.status(200).json(finalPostList);
   } catch (error) {
     console.error(error);
     return res
