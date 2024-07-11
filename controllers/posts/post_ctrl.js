@@ -170,7 +170,6 @@ const execAsync = promisify(exec);
 //       .json({ message: "Something went wrong", error: error });
 //   }
 // };
-
 export const getAllPosts = async (req, res) => {
   try {
     // Fetch all posts
@@ -207,19 +206,20 @@ export const getAllPosts = async (req, res) => {
       return acc;
     }, {});
 
-    // Shuffle posts within each group
-    const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => {
-      return groupedPosts[date].sort(() => Math.random() - 0.5);
-    });
+    // Shuffle posts within each group and convert to array of objects
+    const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => ({
+      date,
+      posts: groupedPosts[date].sort(() => Math.random() - 0.5),
+    }));
 
     // Sort the groups by date in descending order
-    const sortedDates = Object.keys(groupedPosts).sort(
-      (a, b) => new Date(b) - new Date(a)
+    const sortedGroupedPosts = shuffledGroupedPosts.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    // Combine the shuffled groups in sorted order
-    const finalPostList = sortedDates.reduce((acc, date) => {
-      return [...acc, ...groupedPosts[date].sort(() => Math.random() - 0.5)];
+    // Flatten the sorted groups into a final list
+    const finalPostList = sortedGroupedPosts.reduce((acc, group) => {
+      return [...acc, ...group.posts];
     }, []);
 
     return res.status(200).json(finalPostList);
