@@ -17,6 +17,7 @@ import infoHelpRoutes from "./routes/info_help_router.js";
 import qrcodeRoutes from "./routes/qrCode_router.js";
 import cardPrivacyPolicyRoutes from "./routes/card_privacy_policy_router.js";
 import sliderRoutes from "./routes/slider_router.js";
+import adminRoutes from "./routes/admin-router.js";
 
 import passport from "./services/passport.js";
 import session from "express-session";
@@ -103,6 +104,7 @@ app.use("/info-help", infoHelpRoutes);
 app.use("/qrcode", qrcodeRoutes);
 app.use("/card-privacy-policy", cardPrivacyPolicyRoutes);
 app.use("/slider", sliderRoutes);
+app.use("/admin", adminRoutes);
 
 app.get("/", (req, res) => res.send("Server is running"));
 

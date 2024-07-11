@@ -62,14 +62,55 @@ const execAsync = promisify(exec);
 //   }
 // };
 
+// export const getAllPosts = async (req, res) => {
+//   try {
+//     // Get the current date and set the time to 00:00:00
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0);
+
+//     // Fetch posts uploaded today
+//     const todayPosts = await PostModel.find({ createdAt: { $gte: today } })
+//       .populate({
+//         path: "owner",
+//         select: "fullName profileImage userName",
+//       })
+//       .populate({
+//         path: "comments",
+//         populate: { path: "user", select: "fullName profileImage userName" },
+//       });
+
+//     // Fetch posts uploaded before today
+//     const beforeTodayPosts = await PostModel.find({ createdAt: { $lt: today } })
+//       .populate({
+//         path: "owner",
+//         select: "fullName profileImage userName",
+//       })
+//       .populate({
+//         path: "comments",
+//         populate: { path: "user", select: "fullName profileImage userName" },
+//       });
+
+//     // Shuffle both lists
+//     const shuffledTodayPosts = todayPosts.sort(() => Math.random() - 0.5);
+//     const shuffledBeforeTodayPosts = beforeTodayPosts.sort(
+//       () => Math.random() - 0.5
+//     );
+
+//     // Combine both lists
+//     const finalPostList = [...shuffledTodayPosts, ...shuffledBeforeTodayPosts];
+
+//     return res.status(200).json(finalPostList);
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Something went wrong", error: error });
+//   }
+// };
 export const getAllPosts = async (req, res) => {
   try {
-    // Get the current date and set the time to 00:00:00
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Fetch posts uploaded today
-    const todayPosts = await PostModel.find({ createdAt: { $gte: today } })
+    // Fetch all posts
+    const allPosts = await PostModel.find()
       .populate({
         path: "owner",
         select: "fullName profileImage userName",
@@ -79,25 +120,47 @@ export const getAllPosts = async (req, res) => {
         populate: { path: "user", select: "fullName profileImage userName" },
       });
 
-    // Fetch posts uploaded before today
-    const beforeTodayPosts = await PostModel.find({ createdAt: { $lt: today } })
-      .populate({
-        path: "owner",
-        select: "fullName profileImage userName",
-      })
-      .populate({
-        path: "comments",
-        populate: { path: "user", select: "fullName profileImage userName" },
-      });
+    // Helper function to format date to YYYY-MM-DD
+    const formatDate = date => {
+      const d = new Date(date);
+      let month = "" + (d.getMonth() + 1);
+      let day = "" + d.getDate();
+      const year = d.getFullYear();
 
-    // Shuffle both lists
-    const shuffledTodayPosts = todayPosts.sort(() => Math.random() - 0.5);
-    const shuffledBeforeTodayPosts = beforeTodayPosts.sort(
-      () => Math.random() - 0.5
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      return [year, month, day].join("-");
+    };
+
+    // Group posts by date
+    const groupedPosts = allPosts.reduce((acc, post) => {
+      const date = formatDate(post.createdAt);
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(post);
+      return acc;
+    }, {});
+
+    // Shuffle posts within each group
+    const shuffledGroupedPosts = Object.keys(groupedPosts).reduce(
+      (acc, date) => {
+        acc[date] = groupedPosts[date].sort(() => Math.random() - 0.5);
+        return acc;
+      },
+      {}
     );
 
-    // Combine both lists
-    const finalPostList = [...shuffledTodayPosts, ...shuffledBeforeTodayPosts];
+    // Sort the groups by date in descending order
+    const sortedDates = Object.keys(shuffledGroupedPosts).sort(
+      (a, b) => new Date(b) - new Date(a)
+    );
+
+    // Combine the shuffled groups in sorted order
+    const finalPostList = sortedDates.reduce((acc, date) => {
+      return [...acc, ...shuffledGroupedPosts[date]];
+    }, []);
 
     return res.status(200).json(finalPostList);
   } catch (error) {
@@ -532,6 +595,38 @@ export const deletePost = async (req, res) => {
         .status(404)
         .json({ message: "You do not have permission to delete this post" });
     }
+    const deletedPost = await PostModel.findByIdAndDelete(id);
+    const user = await userModel.findById(userId);
+    user.posts.pull(deletedPost._id);
+    await user.save();
+    return res.status(200).json("Deleted Post successfully");
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error });
+  }
+};
+
+export const deletePostDashboard = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const post = await PostModel.findById(id);
+    const adminId = process.env.ADMIN_ID;
+    if (!post) {
+      return res.status(404).json({ message: " Post not found" });
+    }
+
+    // if (
+    //   post.owner.toString() !== userId.toString() &&
+    //   userId.toString() !== adminId.toString()
+    // ) {
+    //   return res
+    //     .status(404)
+    //     .json({ message: "You do not have permission to delete this post" });
+    // }
+    const userId = post.owner.toString();
     const deletedPost = await PostModel.findByIdAndDelete(id);
     const user = await userModel.findById(userId);
     user.posts.pull(deletedPost._id);

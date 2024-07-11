@@ -3,6 +3,7 @@ import {
   addCommentToPost,
   createPost,
   deletePost,
+  deletePostDashboard,
   editPost,
   getAllPosts,
   getPostById,
@@ -26,6 +27,7 @@ router.get("/user-docs-posts/:userId", getUserDocsPosts);
 router.post("/create", auth, createPost);
 router.put("/edit/:id", auth, editPost);
 router.delete("/delete/:id", auth, deletePost);
+router.delete("/delete-dash/:id", auth, deletePostDashboard);
 router.put("/:id/toggleLike", auth, toggleLike);
 router.put("/:id/toggle-interesting-post", auth, toggleInterestingPost);
 
