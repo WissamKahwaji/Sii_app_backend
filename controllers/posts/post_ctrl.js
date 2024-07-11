@@ -107,6 +107,70 @@ const execAsync = promisify(exec);
 //       .json({ message: "Something went wrong", error: error });
 //   }
 // };
+// export const getAllPosts = async (req, res) => {
+//   try {
+//     // Fetch all posts
+//     const allPosts = await PostModel.find()
+//       .populate({
+//         path: "owner",
+//         select: "fullName profileImage userName",
+//       })
+//       .populate({
+//         path: "comments",
+//         populate: { path: "user", select: "fullName profileImage userName" },
+//       });
+
+//     // Helper function to format date to YYYY-MM-DD
+//     const formatDate = date => {
+//       const d = new Date(date);
+//       let month = "" + (d.getMonth() + 1);
+//       let day = "" + d.getDate();
+//       const year = d.getFullYear();
+
+//       if (month.length < 2) month = "0" + month;
+//       if (day.length < 2) day = "0" + day;
+
+//       return [year, month, day].join("-");
+//     };
+
+//     // Group posts by date
+//     const groupedPosts = allPosts.reduce((acc, post) => {
+//       const date = formatDate(post.createdAt);
+//       if (!acc[date]) {
+//         acc[date] = [];
+//       }
+//       acc[date].push(post);
+//       return acc;
+//     }, {});
+
+//     // Shuffle posts within each group
+//     const shuffledGroupedPosts = Object.keys(groupedPosts).reduce(
+//       (acc, date) => {
+//         acc[date] = groupedPosts[date].sort(() => Math.random() - 0.5);
+//         return acc;
+//       },
+//       {}
+//     );
+
+//     // Sort the groups by date in descending order
+//     const sortedDates = Object.keys(shuffledGroupedPosts).sort(
+//       (a, b) => new Date(b) - new Date(a)
+//     );
+
+//     // Combine the shuffled groups in sorted order
+//     const finalPostList = sortedDates.reduce((acc, date) => {
+//       return [...acc, ...shuffledGroupedPosts[date]];
+//     }, []);
+
+//     return res.status(200).json(finalPostList);
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Something went wrong", error: error });
+//   }
+// };
+
 export const getAllPosts = async (req, res) => {
   try {
     // Fetch all posts
@@ -144,22 +208,18 @@ export const getAllPosts = async (req, res) => {
     }, {});
 
     // Shuffle posts within each group
-    const shuffledGroupedPosts = Object.keys(groupedPosts).reduce(
-      (acc, date) => {
-        acc[date] = groupedPosts[date].sort(() => Math.random() - 0.5);
-        return acc;
-      },
-      {}
-    );
+    const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => {
+      return groupedPosts[date].sort(() => Math.random() - 0.5);
+    });
 
     // Sort the groups by date in descending order
-    const sortedDates = Object.keys(shuffledGroupedPosts).sort(
+    const sortedDates = Object.keys(groupedPosts).sort(
       (a, b) => new Date(b) - new Date(a)
     );
 
     // Combine the shuffled groups in sorted order
     const finalPostList = sortedDates.reduce((acc, date) => {
-      return [...acc, ...shuffledGroupedPosts[date]];
+      return [...acc, ...groupedPosts[date].sort(() => Math.random() - 0.5)];
     }, []);
 
     return res.status(200).json(finalPostList);
@@ -170,7 +230,6 @@ export const getAllPosts = async (req, res) => {
       .json({ message: "Something went wrong", error: error });
   }
 };
-
 // get User Posts
 export const getUserPosts = async (req, res) => {
   try {
