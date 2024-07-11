@@ -61,52 +61,60 @@ const execAsync = promisify(exec);
 //       .json({ message: "Something went wrong", error: error });
 //   }
 // };
+export const getAllPosts = async (req, res) => {
+  try {
+    // Fetch all posts and populate owner and comments
+    const allPosts = await PostModel.find()
+      .populate({
+        path: "owner",
+        select: "fullName profileImage userName",
+      })
+      .populate({
+        path: "comments",
+        populate: { path: "user", select: "fullName profileImage userName" },
+      });
 
-// export const getAllPosts = async (req, res) => {
-//   try {
-//     // Get the current date and set the time to 00:00:00
-//     const today = new Date();
-//     today.setHours(0, 0, 0, 0);
+    // Helper function to format date to YYYY-MM-DD in UTC
+    const formatDate = date => {
+      const d = new Date(date);
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(d.getUTCDate()).padStart(2, "0");
 
-//     // Fetch posts uploaded today
-//     const todayPosts = await PostModel.find({ createdAt: { $gte: today } })
-//       .populate({
-//         path: "owner",
-//         select: "fullName profileImage userName",
-//       })
-//       .populate({
-//         path: "comments",
-//         populate: { path: "user", select: "fullName profileImage userName" },
-//       });
+      return `${year}-${month}-${day}`;
+    };
 
-//     // Fetch posts uploaded before today
-//     const beforeTodayPosts = await PostModel.find({ createdAt: { $lt: today } })
-//       .populate({
-//         path: "owner",
-//         select: "fullName profileImage userName",
-//       })
-//       .populate({
-//         path: "comments",
-//         populate: { path: "user", select: "fullName profileImage userName" },
-//       });
+    // Group posts by date
+    const groupedPosts = allPosts.reduce((acc, post) => {
+      const date = formatDate(post.createdAt);
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(post);
+      return acc;
+    }, {});
 
-//     // Shuffle both lists
-//     const shuffledTodayPosts = todayPosts.sort(() => Math.random() - 0.5);
-//     const shuffledBeforeTodayPosts = beforeTodayPosts.sort(
-//       () => Math.random() - 0.5
-//     );
+    // Shuffle posts within each group and convert to an array of objects
+    const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => ({
+      date,
+      posts: groupedPosts[date].sort(() => Math.random() - 0.5),
+    }));
 
-//     // Combine both lists
-//     const finalPostList = [...shuffledTodayPosts, ...shuffledBeforeTodayPosts];
+    // Sort the groups by date in descending order
+    shuffledGroupedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-//     return res.status(200).json(finalPostList);
-//   } catch (error) {
-//     console.error(error);
-//     return res
-//       .status(500)
-//       .json({ message: "Something went wrong", error: error });
-//   }
-// };
+    // Flatten the sorted groups into a final list
+    const finalPostList = shuffledGroupedPosts.reduce((acc, group) => {
+      return [...acc, ...group.posts];
+    }, []);
+
+    return res.status(200).json(finalPostList);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
 // export const getAllPosts = async (req, res) => {
 //   try {
 //     // Fetch all posts
@@ -143,23 +151,20 @@ const execAsync = promisify(exec);
 //       return acc;
 //     }, {});
 
-//     // Shuffle posts within each group
-//     const shuffledGroupedPosts = Object.keys(groupedPosts).reduce(
-//       (acc, date) => {
-//         acc[date] = groupedPosts[date].sort(() => Math.random() - 0.5);
-//         return acc;
-//       },
-//       {}
-//     );
+//     // Shuffle posts within each group and convert to array of objects
+//     const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => ({
+//       date,
+//       posts: groupedPosts[date].sort(() => Math.random() - 0.5),
+//     }));
 
 //     // Sort the groups by date in descending order
-//     const sortedDates = Object.keys(shuffledGroupedPosts).sort(
-//       (a, b) => new Date(b) - new Date(a)
+//     const sortedGroupedPosts = shuffledGroupedPosts.sort(
+//       (a, b) => new Date(b.date) - new Date(a.date)
 //     );
 
-//     // Combine the shuffled groups in sorted order
-//     const finalPostList = sortedDates.reduce((acc, date) => {
-//       return [...acc, ...shuffledGroupedPosts[date]];
+//     // Flatten the sorted groups into a final list
+//     const finalPostList = sortedGroupedPosts.reduce((acc, group) => {
+//       return [...acc, ...group.posts];
 //     }, []);
 
 //     return res.status(200).json(finalPostList);
@@ -170,66 +175,6 @@ const execAsync = promisify(exec);
 //       .json({ message: "Something went wrong", error: error });
 //   }
 // };
-export const getAllPosts = async (req, res) => {
-  try {
-    // Fetch all posts
-    const allPosts = await PostModel.find()
-      .populate({
-        path: "owner",
-        select: "fullName profileImage userName",
-      })
-      .populate({
-        path: "comments",
-        populate: { path: "user", select: "fullName profileImage userName" },
-      });
-
-    // Helper function to format date to YYYY-MM-DD
-    const formatDate = date => {
-      const d = new Date(date);
-      let month = "" + (d.getMonth() + 1);
-      let day = "" + d.getDate();
-      const year = d.getFullYear();
-
-      if (month.length < 2) month = "0" + month;
-      if (day.length < 2) day = "0" + day;
-
-      return [year, month, day].join("-");
-    };
-
-    // Group posts by date
-    const groupedPosts = allPosts.reduce((acc, post) => {
-      const date = formatDate(post.createdAt);
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(post);
-      return acc;
-    }, {});
-
-    // Shuffle posts within each group and convert to array of objects
-    const shuffledGroupedPosts = Object.keys(groupedPosts).map(date => ({
-      date,
-      posts: groupedPosts[date].sort(() => Math.random() - 0.5),
-    }));
-
-    // Sort the groups by date in descending order
-    const sortedGroupedPosts = shuffledGroupedPosts.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-
-    // Flatten the sorted groups into a final list
-    const finalPostList = sortedGroupedPosts.reduce((acc, group) => {
-      return [...acc, ...group.posts];
-    }, []);
-
-    return res.status(200).json(finalPostList);
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Something went wrong", error: error });
-  }
-};
 // get User Posts
 export const getUserPosts = async (req, res) => {
   try {
