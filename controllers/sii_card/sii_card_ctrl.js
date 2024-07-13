@@ -84,7 +84,7 @@ export const addSiiCard = async (req, res) => {
       <p>If you have any questions or need assistance, feel free to reach out to our support team at <a href="mailto:support@siiplatform.com" style="color: #007bff;">support@siiplatform.com</a>.</p>
       <p>We are excited to have you with us and hope you enjoy all the benefits that come with your SII Card.</p>
       <p>Best regards,</p>
-      <p style="color: #FECE59;"><strong>SII Team</strong></p>
+      <p style="color: #FECE59;"><strong>SII Platform Team</strong></p>
       <hr>
       <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
     </div>

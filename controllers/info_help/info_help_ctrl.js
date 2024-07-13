@@ -115,7 +115,7 @@ export const sendOfferMessage = async (req, res, next) => {
       </ul>
       <p>We appreciate your prompt attention to this inquiry and look forward to your response.</p>
       <p>Best regards,</p>
-      <p><strong>SII Team</strong></p>
+      <p><strong>SII Platform Team</strong></p>
       <p><em>This is an automated message. Please do not reply to this email.</em></p>
     `,
     };

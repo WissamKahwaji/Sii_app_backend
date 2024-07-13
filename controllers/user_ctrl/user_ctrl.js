@@ -227,18 +227,18 @@ export const signUp = async (req, res) => {
       subject: `Welcome to the SII Platform!`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="color: #FECE59;">Welcome to SII, ${fullName}!</h2>
+          <h2 style="color: #FECE59;">Welcome to SII Platform, ${fullName}!</h2>
           <p>Dear ${fullName},</p>
-          <p>Thank you for choosing SII. We are excited to have you on board and look forward to providing you with the best experience possible.</p>
+          <p>Thank you for choosing SII Platform. We are excited to have you on board and look forward to providing you with the best experience possible.</p>
           <p>Here are some resources to help you get started:</p>
           <ul>
-            <li><a href="https://www.siiplatform.com/${userName}" style="color: #007bff;">Your Account</a></li>
-            <li><a href="https://www.siiplatform.com/${userName}/qrcode-info" style="color: #007bff;">Your QR Code Info</a></li>
-            <li><a href="https://www.siiplatform.com/help/mail" style="color: #007bff;">Help Center</a></li>
+            <li><a href="https://www.siiplatform.com/${userName}" style="color: #007bff;">Your Account on SII Platform</a></li>
+            <li><a href="https://www.siiplatform.com/${userName}/qrcode-info" style="color: #007bff;">Your QR Code Info on SII Platform</a></li>
+            <li><a href="https://www.siiplatform.com/help/mail" style="color: #007bff;">Help Center on SII Platform</a></li>
           </ul>
           <p>If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:support@siiplatform.com" style="color: #007bff;">support@siiplatform.com</a>.</p>
           <p>Best regards,</p>
-          <p style="color: #FECE59;"><strong>The SII Team</strong></p>
+          <p style="color: #FECE59;"><strong>The SII Platform Team</strong></p>
           <hr>
           <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
         </div>
@@ -664,7 +664,7 @@ export const toggleFollowUser = async (req, res) => {
             <p>${user.fullName} has started following you on SII platform.</p>
             <p>You can view their profile <a href="https://www.siiplatform.com/${user.userName}" style="color: #007bff;">here</a>.</p>
             <p>Best regards,</p>
-            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <p style="color: #FECE59;"><strong>SII Platform Team</strong></p>
             <hr>
             <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
           </div>

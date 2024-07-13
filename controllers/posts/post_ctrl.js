@@ -507,7 +507,7 @@ export const createPost = async (req, res) => {
             </ul>
             <p>If you have any questions or need assistance, feel free to reach out to our support team at <a href="mailto:support@siiplatform.com" style="color: #007bff;">support@siiplatform.com</a>.</p>
             <p>Best regards,</p>
-            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <p style="color: #FECE59;"><strong>SII Platform Team</strong></p>
             <hr>
             <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
           </div>
@@ -769,7 +769,7 @@ export const toggleInterestingPost = async (req, res) => {
             <p>The Post is : ${post.caption}</p>
             <p>You can view their profile <a href="https://www.siiplatform.com/${user.userName}" style="color: #007bff;">here</a>.</p>
             <p>Best regards,</p>
-            <p style="color: #FECE59;"><strong>SII Team</strong></p>
+            <p style="color: #FECE59;"><strong>SII Platform Team</strong></p>
             <hr>
             <p style="font-size: 0.8em; color: #777;">This is an automated message, please do not reply to this email.</p>
           </div>
