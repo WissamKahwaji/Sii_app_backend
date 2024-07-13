@@ -505,7 +505,7 @@ export const createPost = async (req, res) => {
               <li><strong>Discount Percentage:</strong> ${discountPercentage}%</li>
               <li><strong>Discount Function Type:</strong> ${discountFunctionType}</li>
             </ul>
-            <p>If you have any questions or need assistance, feel free to reach out to our support team at <a href="mailto:support@siiapp.net" style="color: #007bff;">support@siiapp.net</a>.</p>
+            <p>If you have any questions or need assistance, feel free to reach out to our support team at <a href="mailto:support@siiplatform.com" style="color: #007bff;">support@siiplatform.com</a>.</p>
             <p>Best regards,</p>
             <p style="color: #FECE59;"><strong>SII Team</strong></p>
             <hr>
@@ -767,7 +767,7 @@ export const toggleInterestingPost = async (req, res) => {
             <p>Dear ${post.owner.fullName},</p>
             <p>${user.fullName} has interested in your post on SII platform.</p>
             <p>The Post is : ${post.caption}</p>
-            <p>You can view their profile <a href="https://www.siiapp.net/${user.userName}" style="color: #007bff;">here</a>.</p>
+            <p>You can view their profile <a href="https://www.siiplatform.com/${user.userName}" style="color: #007bff;">here</a>.</p>
             <p>Best regards,</p>
             <p style="color: #FECE59;"><strong>SII Team</strong></p>
             <hr>

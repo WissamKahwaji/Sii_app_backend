@@ -50,7 +50,7 @@ export const sendEmailSuggestion = async (req, res, next) => {
     const mailOptions = {
       from: '"SII" <suggestion@siimail.net>',
       replyTo: "no-reply@siimail.net",
-      to: "help@siiapp.net",
+      to: "help@siiplatform.com",
       subject: `Suggestion`,
       html: `
       <p><strong>Name:</strong>${name}</p>

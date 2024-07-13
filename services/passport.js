@@ -25,7 +25,7 @@ passport.use(
           margin: 2,
         };
         const qrCodeUrl = await QRCode.toDataURL(
-          `https://www.siiapp.net/${sanitizedUserName}/qrcode-info`,
+          `https://www.siiplatform.com/${sanitizedUserName}/qrcode-info`,
           options
         );
 

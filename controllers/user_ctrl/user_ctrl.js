@@ -179,7 +179,7 @@ export const signUp = async (req, res) => {
       margin: 2,
     };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiapp.net/${userName}/qrcode-info`,
+      `https://www.siiplatform.com/${userName}/qrcode-info`,
       options
     );
 
@@ -232,11 +232,11 @@ export const signUp = async (req, res) => {
           <p>Thank you for choosing SII. We are excited to have you on board and look forward to providing you with the best experience possible.</p>
           <p>Here are some resources to help you get started:</p>
           <ul>
-            <li><a href="https://www.siiapp.net/${userName}" style="color: #007bff;">Your Account</a></li>
-            <li><a href="https://www.siiapp.net/${userName}/qrcode-info" style="color: #007bff;">Your QR Code Info</a></li>
-            <li><a href="https://www.siiapp.net/help/mail" style="color: #007bff;">Help Center</a></li>
+            <li><a href="https://www.siiplatform.com/${userName}" style="color: #007bff;">Your Account</a></li>
+            <li><a href="https://www.siiplatform.com/${userName}/qrcode-info" style="color: #007bff;">Your QR Code Info</a></li>
+            <li><a href="https://www.siiplatform.com/help/mail" style="color: #007bff;">Help Center</a></li>
           </ul>
-          <p>If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:support@siiapp.net" style="color: #007bff;">support@siiapp.net</a>.</p>
+          <p>If you have any questions or need assistance, please do not hesitate to reach out to our support team at <a href="mailto:support@siiplatform.com" style="color: #007bff;">support@siiplatform.com</a>.</p>
           <p>Best regards,</p>
           <p style="color: #FECE59;"><strong>The SII Team</strong></p>
           <hr>
@@ -395,7 +395,7 @@ export const signupWithAddAccount = async (req, res) => {
       margin: 2,
     };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiapp.net/${userName}/qrcode-info`,
+      `https://www.siiplatform.com/${userName}/qrcode-info`,
       options
     );
 
@@ -662,7 +662,7 @@ export const toggleFollowUser = async (req, res) => {
             <h2 style="color: #FECE59;">You have a new follower!</h2>
             <p>Dear ${targetUser.fullName},</p>
             <p>${user.fullName} has started following you on SII platform.</p>
-            <p>You can view their profile <a href="https://www.siiapp.net/${user.userName}" style="color: #007bff;">here</a>.</p>
+            <p>You can view their profile <a href="https://www.siiplatform.com/${user.userName}" style="color: #007bff;">here</a>.</p>
             <p>Best regards,</p>
             <p style="color: #FECE59;"><strong>SII Team</strong></p>
             <hr>
@@ -757,7 +757,7 @@ export const forgetPassword = async (req, res) => {
         pass: process.env.NEW_ACCOUNT_PASSWORD,
       },
     });
-    const resetLink = `https://www.siiapp.net/reset-password/${resetToken}`;
+    const resetLink = `https://www.siiplatform.com/reset-password/${resetToken}`;
 
     const mailOptions = {
       from: '"SII" <Newaccounts@siimail.net>',
@@ -820,7 +820,7 @@ export const generateUserQrCode = async (req, res) => {
       margin: 2,
     };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiapp.net/${userName}/qrcode-info`,
+      `https://www.siiplatform.com/${userName}/qrcode-info`,
       options
     );
     existingUser.qrCodeUrl = qrCodeUrl;

@@ -127,7 +127,7 @@ router.get(
 
       // Redirect to the frontend with the token, userName, and email
       res.redirect(
-        `https://www.siiapp.net/login?token=${token}&userName=${user.userName}&email=${user.email}&userId=${user._id}`
+        `https://www.siiplatform.com/login?token=${token}&userName=${user.userName}&email=${user.email}&userId=${user._id}`
       );
     } catch (err) {
       console.error("Error in Google callback:", err);
