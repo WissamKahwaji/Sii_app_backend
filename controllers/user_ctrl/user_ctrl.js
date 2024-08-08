@@ -179,7 +179,7 @@ export const signUp = async (req, res) => {
       margin: 2,
     };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiplatform.com/${userName}/qrcode-info`,
+      `https://www.siiplatform.com/${normalizedUserName}/qrcode-info`,
       options
     );
 
@@ -395,12 +395,12 @@ export const signupWithAddAccount = async (req, res) => {
       margin: 2,
     };
     const qrCodeUrl = await QRCode.toDataURL(
-      `https://www.siiplatform.com/${userName}/qrcode-info`,
+      `https://www.siiplatform.com/${normalizedUserName}/qrcode-info`,
       options
     );
 
     const newUser = await userModel.create({
-      userName: userName,
+      userName: normalizedUserName,
       fullName: fullName,
       email: email,
       password: hashedPassword,
@@ -815,6 +815,7 @@ export const generateUserQrCode = async (req, res) => {
     if (!existingUser) {
       return res.status(422).json({ message: "User Not Found" });
     }
+    // const normalizedUserName = userName.toLowerCase();
     const options = {
       width: 500,
       margin: 2,
