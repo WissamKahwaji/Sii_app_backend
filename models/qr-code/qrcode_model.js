@@ -20,6 +20,8 @@ const qrCodeSchema = new mongoose.Schema({
   otherLink: String,
   companyProfile: String,
   location: String,
+  androidLink: String,
+  iosLink: String,
 });
 
 export const qrCodeModel = mongoose.model("qrCode", qrCodeSchema);

@@ -42,6 +42,8 @@ export const addOrUpdateUserQrCode = async (req, res) => {
       otherLink,
       location,
       companyProfile,
+      androidLink,
+      iosLink,
     } = req.body;
     const qrCode = await qrCodeModel.findOne({ owner: userId });
     if (qrCode) {
@@ -58,6 +60,8 @@ export const addOrUpdateUserQrCode = async (req, res) => {
       if (painterest || painterest == "") qrCode.painterest = painterest;
       if (otherLink || otherLink == "") qrCode.otherLink = otherLink;
       if (location || location == "") qrCode.location = location;
+      if (androidLink || androidLink == "") qrCode.androidLink = androidLink;
+      if (iosLink || iosLink == "") qrCode.iosLink = iosLink;
 
       if (req.files && req.files["doc"]) {
         const doc = req.files["doc"][0];
@@ -87,6 +91,8 @@ export const addOrUpdateUserQrCode = async (req, res) => {
         painterest,
         otherLink,
         location,
+        androidLink,
+        iosLink,
       });
       if (req.files && req.files["doc"]) {
         const doc = req.files["doc"][0];

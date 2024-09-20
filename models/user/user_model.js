@@ -163,6 +163,8 @@ const userSchema = new mongoose.Schema(
       painterest: String,
       otherLink: String,
       companyProfile: String,
+      androidLink: String,
+      iosLink: String,
     },
     ratings: [
       {
